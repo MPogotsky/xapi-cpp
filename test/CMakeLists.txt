@@ -1,0 +1,15 @@
+helper_FIND_GTEST_LIBS()
+enable_testing()
+
+set( SOURCES 
+    TestConnection.cpp
+)
+
+# Add your tests
+add_executable( tests
+    ${SOURCES}
+)
+
+target_link_libraries( tests ${GTEST_LIBRARIES} xapi GTest::gtest_main)
+include(GoogleTest)
+gtest_discover_tests(tests)
