@@ -9,6 +9,9 @@ namespace xapi
 class Socket : public Connection
 {
   public:
+
+    using Connection::Connection;
+
     boost::asio::awaitable<Json::Value> login(const std::string &accountId, const std::string &password);
     
     boost::asio::awaitable<Json::Value> logout();

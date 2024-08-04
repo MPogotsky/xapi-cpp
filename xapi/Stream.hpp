@@ -9,6 +9,8 @@ namespace xapi
 class Stream : public Connection
 {
   public:
+    using Connection::Connection;
+
     std::string streamSessionId;
 
     boost::asio::awaitable<Json::Value> getBalance();

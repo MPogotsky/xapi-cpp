@@ -9,8 +9,8 @@ boost::asio::awaitable<void> Xapi::connect(const std::string &accountId, const s
                                      const std::string &host, const std::string &type,
                                      bool safeMode)
 {
-    m_socket.safeMode = safeMode;
-    m_stream.safeMode = safeMode;
+    socket.safeMode = safeMode;
+    stream.safeMode = safeMode;
 
     const auto validHost = [&host]() -> std::optional<std::string>
     {
@@ -24,22 +24,22 @@ boost::asio::awaitable<void> Xapi::connect(const std::string &accountId, const s
     const std::string socketUrl = validHost().value_or(host) + "/" + type;
     const std::string streamUrl = validHost().value_or(host) + "/" + type + "Stream";
 
-    co_await m_socket.connect(socketUrl);
-    co_await m_stream.connect(streamUrl);
+    co_await socket.connect(socketUrl);
+    co_await stream.connect(streamUrl);
 
-    const auto result = co_await m_socket.login(accountId, password);
+    const auto result = co_await socket.login(accountId, password);
 
     if(result["status"].asBool() == true) {
         Json::StreamWriterBuilder writer;
         throw exception::LoginFailed(Json::writeString(writer, result));
     }
-    m_stream.streamSessionId = result["streamSessionId"].asString();
+    stream.streamSessionId = result["streamSessionId"].asString();
 }
 
 boost::asio::awaitable<void> Xapi::disconnect()
 {
-    co_await m_socket.disconnect();
-    co_await m_stream.disconnect();
+    co_await socket.disconnect();
+    co_await stream.disconnect();
 }
 
 } // namespace xapi
