@@ -3,23 +3,26 @@
 
 #include <boost/url.hpp>
 
+namespace asio = boost::asio;
+namespace beast = boost::beast;
+namespace ip = boost::asio::ip;
+
 namespace xapi
 {
 
 boost::asio::awaitable<void> Connection::connect(const std::string &url)
 {
-    namespace ip = boost::asio::ip;
-    namespace asio = boost::asio;
-
     const auto executor = co_await asio::this_coro::executor;
-    ip::tcp::resolver resolver(executor);
-
-    const auto parsedUrl = boost::urls::parse_uri(url).value();
-
     try
     {
-        auto const results = co_await resolver.async_resolve(parsedUrl.host(), parsedUrl.port(), asio::use_awaitable);
-        co_await asio::async_connect(m_websocket.next_layer(), results, asio::use_awaitable);
+        const auto parsedUrl = boost::urls::parse_uri(url).value();
+
+        ip::tcp::resolver resolver(executor);
+        auto const results =
+            co_await resolver.async_resolve(parsedUrl.host(), m_websocketDefaultPort, asio::use_awaitable);
+
+        co_await establishSSLConnection(results, parsedUrl.host().c_str());
+
         co_await m_websocket.async_handshake(parsedUrl.host(), parsedUrl.path(), asio::use_awaitable);
         m_connectionEstablished = true;
     }
@@ -27,26 +30,56 @@ boost::asio::awaitable<void> Connection::connect(const std::string &url)
     {
         throw exception::ConnectionClosed(e.what());
     }
+    catch (std::exception const &e)
+    {
+        throw e;
+    }
 };
+
+boost::asio::awaitable<void> Connection::establishSSLConnection(boost::asio::ip::tcp::resolver::results_type results, const char* host)
+{
+    try
+    {
+        auto &tcpStream = beast::get_lowest_layer(m_websocket);
+        co_await tcpStream.async_connect(results, asio::use_awaitable);
+        tcpStream.expires_after(std::chrono::seconds(30));
+        
+        auto &sslStream = m_websocket.next_layer();
+        if (!SSL_set_tlsext_host_name(sslStream.native_handle(), host))
+        {
+            beast::error_code ec(static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category());
+            throw beast::system_error{ec};
+        }
+        co_await sslStream.async_handshake(asio::ssl::stream_base::client, asio::use_awaitable);
+    
+        tcpStream.expires_never();
+    }
+    catch (const boost::system::system_error &e)
+    {
+        throw exception::ConnectionClosed(e.what());
+    }
+    catch (std::exception const &e)
+    {
+        throw e;
+    }
+}
 
 boost::asio::awaitable<void> Connection::disconnect()
 {
-    namespace asio = boost::asio;
     if (m_connectionEstablished)
     {
-        co_await m_websocket.async_close(boost::beast::websocket::close_code::normal, asio::use_awaitable);
+        co_await m_websocket.async_close(beast::websocket::close_code::normal, asio::use_awaitable);
         m_connectionEstablished = false;
     }
 };
 
 boost::asio::awaitable<Json::Value> Connection::listen()
 {
-    namespace asio = boost::asio;
     boost::beast::flat_buffer buffer;
     try
     {
         co_await m_websocket.async_read(buffer, asio::use_awaitable);
-        auto dataString = boost::beast::buffers_to_string(buffer.data());
+        auto dataString = beast::buffers_to_string(buffer.data());
         buffer.consume(buffer.size());
 
         Json::Value jsonData;
@@ -67,8 +100,6 @@ boost::asio::awaitable<Json::Value> Connection::listen()
 
 boost::asio::awaitable<void> Connection::request(const Json::Value &command)
 {
-    namespace asio = boost::asio;
-
     const auto currentTime = std::chrono::system_clock::now();
     const auto duration = currentTime - m_lastRequestTime;
     if (duration < m_requestTimeout)
@@ -95,13 +126,12 @@ boost::asio::awaitable<void> Connection::request(const Json::Value &command)
 
 boost::asio::awaitable<Json::Value> Connection::transaction(const Json::Value &command)
 {
-    namespace asio = boost::asio;
-    boost::beast::flat_buffer buffer;
+    beast::flat_buffer buffer;
     try
     {
         co_await request(command);
         co_await m_websocket.async_read(buffer, asio::use_awaitable);
-        const auto dataString = boost::beast::buffers_to_string(buffer.data());
+        const auto dataString = beast::buffers_to_string(buffer.data());
         buffer.consume(buffer.size());
 
         Json::Value jsonData;
