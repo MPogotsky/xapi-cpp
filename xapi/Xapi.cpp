@@ -29,7 +29,7 @@ boost::asio::awaitable<void> Xapi::connect(const std::string &accountId, const s
 
     const auto result = co_await socket.login(accountId, password);
 
-    if(result["status"].asBool() == true) {
+    if(result["status"].asBool() != true) {
         Json::StreamWriterBuilder writer;
         throw exception::LoginFailed(Json::writeString(writer, result));
     }
