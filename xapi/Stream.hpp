@@ -33,7 +33,7 @@ class Stream : public Connection
 
     boost::asio::awaitable<Json::Value> stopProfits();
 
-    boost::asio::awaitable<Json::Value> getTickPrices(const std::string &symbol, int minArrivalTime, int maxLevel);
+    boost::asio::awaitable<Json::Value> getTickPrices(const std::string &symbol, int minArrivalTime = 0, int maxLevel = 2);
 
     boost::asio::awaitable<Json::Value> stopTickPrices(const std::string &symbol);
 
