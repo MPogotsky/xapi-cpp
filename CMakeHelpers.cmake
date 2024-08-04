@@ -17,7 +17,17 @@ endmacro()
 macro(helper_FIND_JSONCPP_LIB)
     find_package(jsoncpp REQUIRED)
     if(NOT jsoncpp_FOUND)
-        message(FATAL_ERROR "jsoncpp not found. Please install or set jsoncpp variable.")
+        message(FATAL_ERROR "jsoncpp not found. Please check if jsoncpp is installed.")
+    endif()
+endmacro()
+
+#Helper macro to find openSSL library
+macro(helper_FIND_OPENSSL_LIB)
+    find_package(OpenSSL REQUIRED)
+    if(NOT OpenSSL_FOUND)
+        message(FATAL_ERROR "OpenSSL not found. Please check if openSSL is installed")
+    else()
+        include_directories(${OPENSSL_INCLUDE_DIR})
     endif()
 endmacro()
 

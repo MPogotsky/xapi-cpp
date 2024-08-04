@@ -17,5 +17,11 @@ set(XAPI_SOURCES
 
 add_library(xapi STATIC ${XAPI_SOURCES})
 target_compile_options(xapi PRIVATE -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -O2)
-target_link_libraries(xapi PRIVATE Boost::system Boost::url jsoncpp_lib OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries( xapi PRIVATE
+    Boost::system
+    Boost::url
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    jsoncpp_lib
+)
 target_include_directories(xapi PUBLIC ${CMAKE_SOURCE_DIR})

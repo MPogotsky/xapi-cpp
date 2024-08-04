@@ -21,9 +21,9 @@ include(${CMAKE_SOURCE_DIR}/CMakeHelpers.cmake)
 
 helper_FIND_BOOST_LIBS()
 helper_FIND_JSONCPP_LIB()
+helper_FIND_OPENSSL_LIB()
 
 add_subdirectory(xapi)
-target_link_libraries(xapi PRIVATE Boost::system Boost::url jsoncpp_lib)
 
 # TESTS ======================================
 if(BUILD_TESTS)
