@@ -5,7 +5,7 @@
 namespace xapi
 {
 
-boost::asio::awaitable<void> Xapi::connect(const std::string &accountId, const std::string &password,
+boost::asio::awaitable<void> Xapi::initSession(const std::string &accountId, const std::string &password,
                                      const std::string &host, const std::string &type,
                                      bool safeMode)
 {
@@ -36,7 +36,7 @@ boost::asio::awaitable<void> Xapi::connect(const std::string &accountId, const s
     stream.streamSessionId = result["streamSessionId"].asString();
 }
 
-boost::asio::awaitable<void> Xapi::disconnect()
+boost::asio::awaitable<void> Xapi::closeSession()
 {
     co_await socket.disconnect();
     co_await stream.disconnect();
