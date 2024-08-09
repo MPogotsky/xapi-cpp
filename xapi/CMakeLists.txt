@@ -4,7 +4,6 @@ set(XAPI_PUBLIC_H
     Connection.hpp
     Socket.hpp
     Stream.hpp
-    Xapi.hpp
 )
 
 set(XAPI_SOURCES
@@ -12,7 +11,6 @@ set(XAPI_SOURCES
     Connection.cpp
     Socket.cpp
     Stream.cpp
-    Xapi.cpp
 )
 
 add_library(xapi STATIC ${XAPI_SOURCES})

@@ -3,6 +3,17 @@
 
 namespace xapi
 {
+boost::asio::awaitable<void> Stream::initSession(const std::string &host, const std::string &type, const std::string& streamSessionId)
+{
+    const std::string streamUrl = urlWithValidHost(host).value_or(host) + "/" + type + "Stream";
+    co_await connect(streamUrl);
+    m_streamSessionId = streamSessionId;
+}
+
+boost::asio::awaitable<void> Stream::closeSession()
+{
+    co_await disconnect();
+}
 
 boost::asio::awaitable<Json::Value> Stream::listen()
 {
@@ -14,7 +25,7 @@ boost::asio::awaitable<void> Stream::getBalance()
 {
     Json::Value command;
     command["command"] = "getBalance";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -29,7 +40,7 @@ boost::asio::awaitable<void> Stream::getCandles(const std::string &symbol)
 {
     Json::Value command;
     command["command"] = "getCandles";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     command["symbol"] = symbol;
     co_await makeRequest(command);
 }
@@ -46,7 +57,7 @@ boost::asio::awaitable<void> Stream::getKeepAlive()
 {
     Json::Value command;
     command["command"] = "getKeepAlive";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -61,7 +72,7 @@ boost::asio::awaitable<void> Stream::getNews()
 {
     Json::Value command;
     command["command"] = "getNews";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -76,7 +87,7 @@ boost::asio::awaitable<void> Stream::getProfits()
 {
     Json::Value command;
     command["command"] = "getProfits";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -91,7 +102,7 @@ boost::asio::awaitable<void> Stream::getTickPrices(const std::string &symbol, in
 {
     Json::Value command;
     command["command"] = "getTickPrices";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     command["symbol"] = symbol;
     command["minArrivalTime"] = minArrivalTime;
     command["maxLevel"] = maxLevel;
@@ -110,7 +121,7 @@ boost::asio::awaitable<void> Stream::getTrades()
 {
     Json::Value command;
     command["command"] = "getTrades";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -125,7 +136,7 @@ boost::asio::awaitable<void> Stream::getTradeStatus()
 {
     Json::Value command;
     command["command"] = "getTradeStatus";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 
@@ -140,7 +151,7 @@ boost::asio::awaitable<void> Stream::ping()
 {
     Json::Value command;
     command["command"] = "ping";
-    command["streamSessionId"] = streamSessionId;
+    command["streamSessionId"] = m_streamSessionId;
     co_await makeRequest(command);
 }
 

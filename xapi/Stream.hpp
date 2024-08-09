@@ -10,7 +10,14 @@ class Stream final : public Connection
 {
   public:
 
-    std::string streamSessionId;
+    Stream() = delete;
+    ~Stream() = default;
+
+    using Connection::Connection;
+
+    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type, const std::string& streamSessionId);
+
+    boost::asio::awaitable<void> closeSession();
 
     boost::asio::awaitable<Json::Value> listen();
 
@@ -47,6 +54,9 @@ class Stream final : public Connection
     boost::asio::awaitable<void> stopTradeStatus();
 
     boost::asio::awaitable<void> ping();
+
+private:
+    std::string m_streamSessionId;
 };
 
 } // namespace xapi

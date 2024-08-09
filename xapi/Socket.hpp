@@ -9,11 +9,19 @@ namespace xapi
 class Socket final : public Connection
 {
   public:
+
+    Socket() = delete;
+    ~Socket() = default;
+
     using Connection::Connection;
 
     bool safeMode;
 
-    boost::asio::awaitable<Json::Value> login(const std::string &accountId, const std::string &password);
+    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type);
+
+    boost::asio::awaitable<void> closeSession();
+
+    boost::asio::awaitable<std::string> login(const std::string &accountId, const std::string &password);
 
     boost::asio::awaitable<Json::Value> logout();
 

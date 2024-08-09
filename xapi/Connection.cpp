@@ -17,6 +17,15 @@ Connection::Connection(boost::asio::io_context &ioContext)
 {
 }
 
+std::optional<std::string> Connection::urlWithValidHost(const std::string &url)
+{
+    if (url.starts_with("wss://") or url.starts_with("ws://"))
+    {
+        return {};
+    }
+    return std::string("wss://" + url);
+}
+
 boost::asio::awaitable<void> Connection::connect(const std::string &url)
 {
     const auto executor = co_await asio::this_coro::executor;

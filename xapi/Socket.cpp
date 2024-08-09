@@ -1,16 +1,34 @@
 #include "Socket.hpp"
+#include "Exceptions.hpp"
 
 namespace xapi
 {
 
-boost::asio::awaitable<Json::Value> Socket::login(const std::string &accountId, const std::string &password)
+boost::asio::awaitable<void> Socket::initSession(const std::string &host, const std::string &type)
+{
+    const std::string socketUrl = urlWithValidHost(host).value_or(host) + "/" + type;
+    co_await connect(socketUrl);
+}
+
+boost::asio::awaitable<void> Socket::closeSession()
+{
+    co_await disconnect();
+}
+
+boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, const std::string &password)
 {
     Json::Value command;
     command["command"] = "login";
     command["arguments"]["userId"] = accountId;
     command["arguments"]["password"] = password;
     auto result = co_await request(command);
-    co_return result;
+
+    if(result["status"].asBool() != true) {
+        Json::StreamWriterBuilder writer;
+        throw exception::LoginFailed(Json::writeString(writer, result));
+    }
+    
+    co_return result["streamSessionId"].asString();
 }
 
 boost::asio::awaitable<Json::Value> Socket::logout()

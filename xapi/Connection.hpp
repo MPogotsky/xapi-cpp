@@ -7,6 +7,8 @@
 #include <boost/beast/websocket/ssl.hpp>
 #include <chrono>
 #include <coroutine>
+#include <optional>
+#include <string>
 #include <jsoncpp/json/json.h>
 
 namespace xapi
@@ -21,6 +23,8 @@ class Connection
     boost::asio::awaitable<void> connect(const std::string &url);
 
     boost::asio::awaitable<void> disconnect();
+
+    std::optional<std::string> urlWithValidHost(const std::string &url);
 
   protected:
     boost::asio::awaitable<void> makeRequest(const Json::Value &command);
