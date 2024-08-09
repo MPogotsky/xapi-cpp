@@ -10,7 +10,6 @@ boost::asio::awaitable<void> Xapi::initSession(const std::string &accountId, con
                                      bool safeMode)
 {
     socket.safeMode = safeMode;
-    stream.safeMode = safeMode;
 
     const auto validHost = [&host]() -> std::optional<std::string>
     {

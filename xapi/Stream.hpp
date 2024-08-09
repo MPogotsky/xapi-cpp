@@ -6,46 +6,47 @@
 namespace xapi
 {
 
-class Stream : public Connection
+class Stream final : public Connection
 {
   public:
-    using Connection::Connection;
 
     std::string streamSessionId;
 
-    boost::asio::awaitable<Json::Value> getBalance();
+    boost::asio::awaitable<Json::Value> listen();
 
-    boost::asio::awaitable<Json::Value> stopBalance();
+    boost::asio::awaitable<void> getBalance();
 
-    boost::asio::awaitable<Json::Value> getCandles(const std::string &symbol);
+    boost::asio::awaitable<void> stopBalance();
 
-    boost::asio::awaitable<Json::Value> stopCandles(const std::string &symbol);
+    boost::asio::awaitable<void> getCandles(const std::string &symbol);
 
-    boost::asio::awaitable<Json::Value> getKeepAlive();
+    boost::asio::awaitable<void> stopCandles(const std::string &symbol);
 
-    boost::asio::awaitable<Json::Value> stopKeepAlive();
+    boost::asio::awaitable<void> getKeepAlive();
 
-    boost::asio::awaitable<Json::Value> getNews();
+    boost::asio::awaitable<void> stopKeepAlive();
 
-    boost::asio::awaitable<Json::Value> stopNews();
+    boost::asio::awaitable<void> getNews();
 
-    boost::asio::awaitable<Json::Value> getProfits();
+    boost::asio::awaitable<void> stopNews();
 
-    boost::asio::awaitable<Json::Value> stopProfits();
+    boost::asio::awaitable<void> getProfits();
 
-    boost::asio::awaitable<Json::Value> getTickPrices(const std::string &symbol, int minArrivalTime = 0, int maxLevel = 2);
+    boost::asio::awaitable<void> stopProfits();
 
-    boost::asio::awaitable<Json::Value> stopTickPrices(const std::string &symbol);
+    boost::asio::awaitable<void> getTickPrices(const std::string &symbol, int minArrivalTime = 0, int maxLevel = 2);
 
-    boost::asio::awaitable<Json::Value> getTrades();
+    boost::asio::awaitable<void> stopTickPrices(const std::string &symbol);
 
-    boost::asio::awaitable<Json::Value> stopTrades();
+    boost::asio::awaitable<void> getTrades();
 
-    boost::asio::awaitable<Json::Value> getTradeStatus();
+    boost::asio::awaitable<void> stopTrades();
 
-    boost::asio::awaitable<Json::Value> stopTradeStatus();
+    boost::asio::awaitable<void> getTradeStatus();
 
-    boost::asio::awaitable<Json::Value> ping();
+    boost::asio::awaitable<void> stopTradeStatus();
+
+    boost::asio::awaitable<void> ping();
 };
 
 } // namespace xapi

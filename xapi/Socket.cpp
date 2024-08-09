@@ -9,7 +9,7 @@ boost::asio::awaitable<Json::Value> Socket::login(const std::string &accountId, 
     command["command"] = "login";
     command["arguments"]["userId"] = accountId;
     command["arguments"]["password"] = password;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -17,7 +17,7 @@ boost::asio::awaitable<Json::Value> Socket::logout()
 {
     Json::Value command;
     command["command"] = "logout";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -25,7 +25,7 @@ boost::asio::awaitable<Json::Value> Socket::getAllSymbols()
 {
     Json::Value command;
     command["command"] = "getAllSymbols";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -33,7 +33,7 @@ boost::asio::awaitable<Json::Value> Socket::getCalendar()
 {
     Json::Value command;
     command["command"] = "getCalendar";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -45,7 +45,7 @@ boost::asio::awaitable<Json::Value> Socket::getChartLastRequest(const std::strin
     command["arguments"]["info"]["period"] = static_cast<int>(period);
     command["arguments"]["info"]["start"] = start;
     command["arguments"]["info"]["symbol"] = symbol;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -58,7 +58,7 @@ boost::asio::awaitable<Json::Value> Socket::getChartRangeRequest(const std::stri
     command["arguments"]["info"]["start"] = start;
     command["arguments"]["info"]["symbol"] = symbol;
     command["arguments"]["info"]["ticks"] = ticks;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -68,7 +68,7 @@ boost::asio::awaitable<Json::Value> Socket::getCommissionDef(const std::string &
     command["command"] = "getCommissionDef";
     command["arguments"]["symbol"] = symbol;
     command["arguments"]["volume"] = volume;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -76,7 +76,7 @@ boost::asio::awaitable<Json::Value> Socket::getCurrentUserData()
 {
     Json::Value command;
     command["command"] = "getCurrentUserData";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -86,7 +86,7 @@ boost::asio::awaitable<Json::Value> Socket::getIbsHistory(int start, int end)
     command["command"] = "getIbsHistory";
     command["arguments"]["start"] = start;
     command["arguments"]["end"] = end;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -94,7 +94,7 @@ boost::asio::awaitable<Json::Value> Socket::getMarginLevel()
 {
     Json::Value command;
     command["command"] = "getMarginLevel";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -104,7 +104,7 @@ boost::asio::awaitable<Json::Value> Socket::getMarginTrade(const std::string &sy
     command["command"] = "getMarginTrade";
     command["arguments"]["symbol"] = symbol;
     command["arguments"]["volume"] = volume;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -114,7 +114,7 @@ boost::asio::awaitable<Json::Value> Socket::getNews(int start, int end)
     command["command"] = "getNews";
     command["arguments"]["start"] = start;
     command["arguments"]["end"] = end;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -128,7 +128,7 @@ boost::asio::awaitable<Json::Value> Socket::getProfitCalculation(const std::stri
     command["arguments"]["openPrice"] = openPrice;
     command["arguments"]["closePrice"] = closePrice;
     command["arguments"]["volume"] = volume;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -136,7 +136,7 @@ boost::asio::awaitable<Json::Value> Socket::getServerTime()
 {
     Json::Value command;
     command["command"] = "getServerTime";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -144,7 +144,7 @@ boost::asio::awaitable<Json::Value> Socket::getStepRules()
 {
     Json::Value command;
     command["command"] = "getStepRules";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -153,7 +153,7 @@ boost::asio::awaitable<Json::Value> Socket::getSymbol(const std::string &symbol)
     Json::Value command;
     command["command"] = "getSymbol";
     command["arguments"]["symbol"] = symbol;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -169,7 +169,7 @@ boost::asio::awaitable<Json::Value> Socket::getTickPrices(const std::vector<std:
     }
     command["arguments"]["timestamp"] = timestamp;
     command["arguments"]["level"] = level;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -182,7 +182,7 @@ boost::asio::awaitable<Json::Value> Socket::getTradeRecords(const std::vector<in
     {
         command["arguments"]["orders"].append(order);
     }
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -191,7 +191,7 @@ boost::asio::awaitable<Json::Value> Socket::getTrades(bool openedOnly)
     Json::Value command;
     command["command"] = "getTrades";
     command["arguments"]["openedOnly"] = openedOnly;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -201,7 +201,7 @@ boost::asio::awaitable<Json::Value> Socket::getTradesHistory(int start, int end)
     command["command"] = "getTradesHistory";
     command["arguments"]["start"] = start;
     command["arguments"]["end"] = end;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -214,7 +214,7 @@ boost::asio::awaitable<Json::Value> Socket::getTradingHours(const std::vector<st
     {
         command["arguments"]["symbols"].append(sym);
     }
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -222,7 +222,7 @@ boost::asio::awaitable<Json::Value> Socket::getVersion()
 {
     Json::Value command;
     command["command"] = "getVersion";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -230,7 +230,7 @@ boost::asio::awaitable<Json::Value> Socket::ping()
 {
     Json::Value command;
     command["command"] = "ping";
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -262,7 +262,7 @@ boost::asio::awaitable<Json::Value> Socket::tradeTransaction(const std::string &
     command["arguments"]["tradeTransInfo"]["type"] = static_cast<int>(type);
     command["arguments"]["tradeTransInfo"]["volume"] = volume;
 
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
     co_return result;
 }
 
@@ -271,7 +271,14 @@ boost::asio::awaitable<Json::Value> Socket::tradeTransactionStatus(int order)
     Json::Value command;
     command["command"] = "tradeTransactionStatus";
     command["arguments"]["order"] = order;
-    auto result = co_await transaction(command);
+    auto result = co_await request(command);
+    co_return result;
+}
+
+boost::asio::awaitable<Json::Value> Socket::request(const Json::Value& command)
+{
+    co_await makeRequest(command);
+    auto result = co_await waitResponse();
     co_return result;
 }
 

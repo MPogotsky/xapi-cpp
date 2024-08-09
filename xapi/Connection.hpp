@@ -15,26 +15,17 @@ namespace xapi
 class Connection
 {
   public:
-    Connection(boost::asio::io_context &ioContext)
-        : safeMode(false), m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
-          m_websocket(m_ioContext, m_sslContext), m_lastRequestTime(std::chrono::system_clock::now()),
-          m_connectionEstablished(false)
-    {
-    }
-
-    ~Connection()
-    {
-    }
+    Connection(boost::asio::io_context &ioContext);
+    ~Connection() {};
 
     boost::asio::awaitable<void> connect(const std::string &url);
-    boost::asio::awaitable<void> disconnect();
-    boost::asio::awaitable<Json::Value> listen();
-    boost::asio::awaitable<Json::Value> transaction(const Json::Value &command);
-    boost::asio::awaitable<void> request(const Json::Value &command);
 
-    bool safeMode;
+    boost::asio::awaitable<void> disconnect();
 
   protected:
+    boost::asio::awaitable<void> makeRequest(const Json::Value &command);
+    boost::asio::awaitable<Json::Value> waitResponse();
+
   private:
     boost::asio::awaitable<void> establishSSLConnection(boost::asio::ip::tcp::resolver::results_type results,
                                                         const char *host);
