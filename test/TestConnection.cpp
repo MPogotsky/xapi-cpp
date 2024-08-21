@@ -9,21 +9,21 @@ using namespace xapi;
 class ConnectionTest : public testing::Test
 {
   protected:
-    void SetUp() override {
-
+    void SetUp() override
+    {
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
     }
 
   public:
-
     boost::asio::io_context &getIoContext()
     {
         return m_context;
     }
 
-    template <typename Awaitable> auto run_awaitable(Awaitable &&awaitable)
+    template <typename Awaitable> auto runAwaitable(Awaitable &&awaitable)
     {
         std::exception_ptr eptr;
         using result_type = typename Awaitable::value_type;
@@ -53,7 +53,7 @@ class ConnectionTest : public testing::Test
         return result;
     }
 
-    template <typename Awaitable> auto run_awaitable_void(Awaitable &&awaitable)
+    template <typename Awaitable> auto runAwaitableVoid(Awaitable &&awaitable)
     {
         std::exception_ptr eptr;
         boost::asio::co_spawn(
@@ -82,131 +82,57 @@ class ConnectionTest : public testing::Test
     boost::asio::io_context m_context;
 };
 
-TEST_F(ConnectionTest, ConnectException)
+TEST_F(ConnectionTest, connect_exception)
 {
-    Connection connection(getIoContext());
-    EXPECT_THROW(run_awaitable_void(connection.connect("ws://localhost:99999")), exception::ConnectionClosed);
+    internals::Connection connection(getIoContext());
+    EXPECT_THROW(runAwaitableVoid(connection.connect("ws://localhost:99999")), exception::ConnectionClosed);
 }
 
-TEST_F(ConnectionTest, DisconnectException)
+TEST_F(ConnectionTest, disconnect_exception)
 {
-    Connection connection(getIoContext());
-    EXPECT_NO_THROW(run_awaitable_void(connection.disconnect()));
+    internals::Connection connection(getIoContext());
+    EXPECT_NO_THROW(runAwaitableVoid(connection.disconnect()));
 }
 
-TEST_F(ConnectionTest, ListenException)
+TEST_F(ConnectionTest, urlWithValidHost_okUrl)
 {
-    Connection connection(getIoContext());
-    EXPECT_THROW(run_awaitable(connection.listen()), exception::ConnectionClosed);
-}
+    internals::Connection connection(getIoContext());
 
-TEST(Coonn, Listen) {
-    boost::asio::io_context testContext;
+    std::vector<std::string> okUrls = {"wss://ok.example.com", "ws://ok.example.com"};
 
-    auto testBody = [&]() -> boost::asio::awaitable<void>
+    for (const auto &testUrl : okUrls)
     {
-        Connection connection(testContext);
-
-        co_await connection.connect("ws://localhost:8765/test");
-
-        auto result = co_await connection.listen();
-
-        std::cout << "-----------------------" << result["message"].asString() << std::endl;
-        EXPECT_TRUE(result["message"].asString() == "This is a test JSON message");
-    };
-
-    boost::asio::co_spawn(testContext, testBody, boost::asio::detached);
-
-    testContext.run();
+        auto result = connection.urlWithValidHost(testUrl);
+        EXPECT_TRUE(!result.has_value());
+    }
 }
 
-TEST(Coonn, ListenContigiosly) {
-    boost::asio::io_context testContext;
-
-    auto testBody = [&]() -> boost::asio::awaitable<void>
-    {
-        Connection connection(testContext);
-
-        co_await connection.connect("ws://localhost:8765/test/stream");
-
-        int counter = 0;
-        while(counter < 5) {
-            auto result = co_await connection.listen();
-            std::cout << "-----------------------" << result["message"].asString() << std::endl;
-
-            EXPECT_TRUE(result["message"].asString() == "This is a test JSON message");
-
-            counter++;
-        }
-    };
-
-    boost::asio::co_spawn(testContext, testBody, boost::asio::detached);
-
-    testContext.run();
-}
-
-TEST(Coonn, RequestOnce)
+TEST_F(ConnectionTest, urlWithValidHost_badUrl)
 {
-    boost::asio::io_context testContext;
-    auto testBody = [&]() -> boost::asio::awaitable<void> {
-        Connection connection(testContext);
-        co_await connection.connect("ws://localhost:8765/test/request");
+    internals::Connection connection(getIoContext());
 
-        Json::Value json_value;
-        json_value["message"] = "===========================";
+    std::string testCase = "bad.example.com";
+    std::string expectedResult = "wss://bad.example.com";
 
-        EXPECT_NO_THROW(co_await connection.request(json_value));
-    };
-
-    boost::asio::co_spawn(testContext, testBody, boost::asio::detached);
-
-    testContext.run();
+    auto result = connection.urlWithValidHost(testCase);
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), expectedResult);
 }
 
+TEST_F(ConnectionTest, makeRequest_exception)
+{
+    internals::Connection connection(getIoContext());
 
-TEST(Coonn, RequestSequence) {
-    boost::asio::io_context testContext;
-
-    auto testBody = [&]() -> boost::asio::awaitable<void>
-    {
-        Connection connection(testContext);
-
-        co_await connection.connect("ws://localhost:8765/test/request");
-
-        Json::Value json_value;
-        json_value["message"] = "++++++++";
-
-        for(int i = 0; i < 10; i++) {
-            EXPECT_NO_THROW( co_await connection.request(json_value) );
-        }
-    };
-
-    boost::asio::co_spawn(testContext, testBody, boost::asio::detached);
-
-    testContext.run();
+    Json::Value command;
+    command["command"] = "invalid";
+    EXPECT_THROW(runAwaitableVoid(connection.makeRequest(command)), exception::ConnectionClosed);
 }
 
-TEST(Coonn, TransactionSequence) {
-    boost::asio::io_context testContext;
+TEST_F(ConnectionTest, waitResponse_exception)
+{
+    internals::Connection connection(getIoContext());
 
-    auto testBody = [&]() -> boost::asio::awaitable<void>
-    {
-        Connection connection(testContext);
-
-        co_await connection.connect("ws://localhost:8765/test/transaction");
-
-        Json::Value json_value;
-        json_value["message"] = "++++++++";
-
-        auto result = co_await connection.transaction(json_value);
-        // for(int i = 0; i < 10; i++) {
-        //     EXPECT_NO_THROW( co_await connection.request(json_value) );
-        // }
-        std::cout << "-----------------------" << result["message"].asString() << std::endl;
-        EXPECT_TRUE(result["message"].asString() == "This is a test JSON message");
-    };
-
-    boost::asio::co_spawn(testContext, testBody, boost::asio::detached);
-
-    testContext.run();
+    Json::Value result;
+    EXPECT_THROW(result = runAwaitable(connection.waitResponse()), exception::ConnectionClosed);
+    EXPECT_TRUE(result.empty());
 }
