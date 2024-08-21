@@ -4,6 +4,7 @@ enable_testing()
 set( SOURCES 
     TestConnection.cpp
     TestSocket.cpp
+    TestStream.cpp
 )
 
 # Add your tests
