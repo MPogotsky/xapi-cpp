@@ -6,7 +6,7 @@
 namespace xapi
 {
 
-class Socket final : public Connection
+class Socket final : protected internals::Connection
 {
   public:
 

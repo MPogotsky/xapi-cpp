@@ -6,7 +6,7 @@
 namespace xapi
 {
 
-class Stream final : public Connection
+class Stream final : protected internals::Connection
 {
   public:
 

@@ -9,6 +9,8 @@ namespace ip = boost::asio::ip;
 
 namespace xapi
 {
+namespace internals
+{
 
 Connection::Connection(boost::asio::io_context &ioContext)
     : m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
@@ -125,4 +127,5 @@ boost::asio::awaitable<Json::Value> Connection::waitResponse()
     }
 }
 
+} // namespace internals
 } // namespace xapi

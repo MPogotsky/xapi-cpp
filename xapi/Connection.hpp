@@ -7,11 +7,13 @@
 #include <boost/beast/websocket/ssl.hpp>
 #include <chrono>
 #include <coroutine>
+#include <jsoncpp/json/json.h>
 #include <optional>
 #include <string>
-#include <jsoncpp/json/json.h>
 
 namespace xapi
+{
+namespace internals
 {
 
 class Connection
@@ -26,7 +28,6 @@ class Connection
 
     std::optional<std::string> urlWithValidHost(const std::string &url);
 
-  protected:
     boost::asio::awaitable<void> makeRequest(const Json::Value &command);
     boost::asio::awaitable<Json::Value> waitResponse();
 
@@ -46,4 +47,5 @@ class Connection
     const std::string m_websocketDefaultPort{"443"};
 };
 
+} // namespace internals
 } // namespace xapi
