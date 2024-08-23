@@ -55,4 +55,4 @@ jobs:
     - name: Run tests
       run: |
         cd ${{ steps.strings.outputs.build-output-dir }}
-        ./tests
+        ./test/tests
