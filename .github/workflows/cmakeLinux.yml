@@ -38,8 +38,7 @@ jobs:
         sudo add-apt-repository ppa:mhier/libboost-latest
         sudo apt install libboost-system1.83-dev
         sudo apt install libboost-url1.83-dev
-        sudo apt install libjsoncpp-dev
-        sudo apt install libssl-dev
+        sudo apt install libjsoncpp-dev libssl-dev libgtest-dev
 
 
     - name: Configure CMake
