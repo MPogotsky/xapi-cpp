@@ -4,6 +4,7 @@ set(XAPI_PUBLIC_H
     Connection.hpp
     Socket.hpp
     Stream.hpp
+    Xapi.hpp
 )
 
 set(XAPI_SOURCES
