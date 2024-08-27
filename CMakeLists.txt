@@ -11,10 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BOOST_VERSION_REQUIRED "1.83.0")
 
 # OPTIONS ====================================
-option(BUILD_TESTS "Build tests" ON)
-if (BUILD_TESTS)
-    add_definitions(-DBUILD_TESTS)
+option(BUILD_RELEASE "Release version" OFF)
+if (BUILD_RELEASE)
+    message("-- Build for release")
 endif()
+add_definitions(-DBUILD_RELEASE)
 
 # XAPI =======================================
 include(${CMAKE_SOURCE_DIR}/CMakeHelpers.cmake)
@@ -26,6 +27,6 @@ helper_FIND_OPENSSL_LIB()
 add_subdirectory(xapi)
 
 # TESTS ======================================
-if(BUILD_TESTS)
+if(NOT BUILD_RELEASE)
     add_subdirectory(test)
 endif()
