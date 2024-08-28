@@ -26,8 +26,9 @@ target_link_libraries(Xapi PRIVATE
     jsoncpp_lib
 )
 
-if(BUILD_RELEASE)
-
+if(NOT BUILD_RELEASE)
+    target_include_directories(Xapi PUBLIC ${CMAKE_SOURCE_DIR})
+else()
     # LIBRARY SETUP OPTIONS ========================================
     include(GNUInstallDirs)
     target_include_directories(Xapi
@@ -63,5 +64,4 @@ if(BUILD_RELEASE)
         "${CMAKE_CURRENT_BINARY_DIR}/XapiConfig.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Xapi
     )
-
-endif() # BUILD_RELEASE
+endif()
