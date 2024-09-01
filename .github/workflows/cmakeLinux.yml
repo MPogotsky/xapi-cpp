@@ -47,7 +47,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -S ${{ github.workspace }}
 
-    - name: Build Library For Test
+    - name: Build For Tests
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Run Unit Tests
@@ -55,15 +55,21 @@ jobs:
         cd ${{ steps.strings.outputs.build-output-dir }}
         ./test/tests
 
-    - name: Build And Install Release Version
+    - name: Build Library
       run: |
+        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -DBUILD_RELEASE=ON \
+              -S ${{ github.workspace }}
         cmake --build ${{ steps.strings.outputs.build-output-dir }}
-        cmake --install ${{ steps.strings.outputs.build-output-dir }}
+        sudo cmake --install ${{ steps.strings.outputs.build-output-dir }}
   
     - name: Compile Examples
       run: |
-        cd examples/
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -S ${{ github.workspace }}
+        cd ${{ github.workspace }}/examples
+        mkdir build
+        cmake -B ${{ github.workspace }}/examples/build \
+              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -S ${{ github.workspace }}/examples
+        cmake --build ${{ github.workspace }}/examples/build
         
