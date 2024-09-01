@@ -14,9 +14,15 @@ set(XAPI_SOURCES
     Stream.cpp
 )
 
-add_library(Xapi STATIC ${XAPI_SOURCES})
+add_library(Xapi SHARED ${XAPI_SOURCES})
 
-target_compile_options(Xapi PRIVATE -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -O2)
+target_compile_options(Xapi PRIVATE
+    -Wall
+    -Werror
+    -Wpedantic
+    -Wextra
+    -O2
+)
 
 target_link_libraries(Xapi PRIVATE
     Boost::system
