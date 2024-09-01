@@ -23,6 +23,7 @@ endmacro()
 
 #Helper macro to find openSSL library
 macro(helper_FIND_OPENSSL_LIB)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
     find_package(OpenSSL REQUIRED)
     if(NOT OpenSSL_FOUND)
         message(FATAL_ERROR "OpenSSL not found. Please check if openSSL is installed")

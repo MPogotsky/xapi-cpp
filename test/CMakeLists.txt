@@ -24,8 +24,6 @@ target_link_libraries(tests PRIVATE
     ${GTEST_LIBRARIES}
     Boost::system
     Boost::url
-    OpenSSL::SSL
-    OpenSSL::Crypto
     jsoncpp_lib
     Xapi
     GTest::gtest_main
