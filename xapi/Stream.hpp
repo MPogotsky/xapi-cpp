@@ -9,13 +9,19 @@ namespace xapi
 class Stream final : protected internals::Connection
 {
   public:
-
     Stream() = delete;
-    ~Stream() = default;
 
-    using Connection::Connection;
+    Stream(const Stream &) = delete;
+    Stream &operator=(const Stream &) = delete;
 
-    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type, const std::string& streamSessionId);
+    Stream(Stream &&other) = default;
+    Stream &operator=(Stream &&other) = delete;
+
+    Stream(boost::asio::io_context &ioContext);
+    ~Stream() override = default;
+
+    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type,
+                                             const std::string &streamSessionId);
 
     boost::asio::awaitable<void> closeSession();
 
@@ -55,7 +61,7 @@ class Stream final : protected internals::Connection
 
     boost::asio::awaitable<void> ping();
 
-private:
+  private:
     std::string m_streamSessionId;
 };
 

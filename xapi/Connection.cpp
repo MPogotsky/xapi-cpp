@@ -15,7 +15,7 @@ namespace internals
 Connection::Connection(boost::asio::io_context &ioContext)
     : m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
       m_websocket(m_ioContext, m_sslContext), m_lastRequestTime(std::chrono::system_clock::now()),
-      m_connectionEstablished(false)
+      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443")
 {
 }
 

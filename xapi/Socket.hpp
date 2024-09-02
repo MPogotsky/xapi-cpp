@@ -9,11 +9,16 @@ namespace xapi
 class Socket final : protected internals::Connection
 {
   public:
-
     Socket() = delete;
-    ~Socket() = default;
 
-    using Connection::Connection;
+    Socket(const Socket &) = delete;
+    Socket &operator=(const Socket &) = delete;
+
+    Socket(Socket &&other) = default;
+    Socket &operator=(Socket &&other) = delete;
+
+    Socket(boost::asio::io_context &ioContext);
+    ~Socket() override = default;
 
     bool safeMode;
 

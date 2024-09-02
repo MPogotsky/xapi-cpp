@@ -3,6 +3,11 @@
 
 namespace xapi
 {
+
+Stream::Stream(boost::asio::io_context &ioContext)
+: Connection(ioContext), m_streamSessionId("") 
+{}
+
 boost::asio::awaitable<void> Stream::initSession(const std::string &host, const std::string &type, const std::string& streamSessionId)
 {
     const std::string streamUrl = urlWithValidHost(host).value_or(host) + "/" + type + "Stream";

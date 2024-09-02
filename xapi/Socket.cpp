@@ -4,6 +4,10 @@
 namespace xapi
 {
 
+Socket::Socket(boost::asio::io_context &ioContext)
+: Connection(ioContext), safeMode(true) 
+{}
+
 boost::asio::awaitable<void> Socket::initSession(const std::string &host, const std::string &type)
 {
     const std::string socketUrl = urlWithValidHost(host).value_or(host) + "/" + type;

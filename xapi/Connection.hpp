@@ -19,8 +19,17 @@ namespace internals
 class Connection
 {
   public:
+    Connection() = delete;
+
+    Connection(const Connection &) = delete;
+    Connection &operator=(const Connection &) = delete;
+
+    Connection(Connection &&other) = default;
+    // Move assignment operatopr not supported because of boost::beast::websocket::stream
+    Connection &operator=(Connection &&other) = delete;
+
     Connection(boost::asio::io_context &ioContext);
-    ~Connection() {};
+    virtual ~Connection() = default;
 
     boost::asio::awaitable<void> connect(const std::string &url);
 
@@ -43,8 +52,8 @@ class Connection
     std::chrono::time_point<std::chrono::system_clock> m_lastRequestTime;
     bool m_connectionEstablished;
 
-    const std::chrono::milliseconds m_requestTimeout{200};
-    const std::string m_websocketDefaultPort{"443"};
+    const std::chrono::milliseconds m_requestTimeout;
+    const std::string m_websocketDefaultPort;
 };
 
 } // namespace internals
