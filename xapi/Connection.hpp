@@ -28,14 +28,14 @@ class Connection
     // Move assignment operatopr not supported because of boost::beast::websocket::stream
     Connection &operator=(Connection &&other) = delete;
 
-    Connection(boost::asio::io_context &ioContext);
+    explicit Connection(boost::asio::io_context &ioContext);
     virtual ~Connection() = default;
 
     boost::asio::awaitable<void> connect(const std::string &url);
 
     boost::asio::awaitable<void> disconnect();
 
-    std::optional<std::string> urlWithValidHost(const std::string &url);
+    std::optional<std::string> urlWithValidHost(const std::string &url) const noexcept;
 
     boost::asio::awaitable<void> makeRequest(const Json::Value &command);
     boost::asio::awaitable<Json::Value> waitResponse();

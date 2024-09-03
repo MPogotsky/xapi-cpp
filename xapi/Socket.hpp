@@ -17,7 +17,7 @@ class Socket final : protected internals::Connection
     Socket(Socket &&other) = default;
     Socket &operator=(Socket &&other) = delete;
 
-    Socket(boost::asio::io_context &ioContext);
+    explicit Socket(boost::asio::io_context &ioContext);
     ~Socket() override = default;
 
     bool safeMode;

@@ -17,7 +17,7 @@ class Stream final : protected internals::Connection
     Stream(Stream &&other) = default;
     Stream &operator=(Stream &&other) = delete;
 
-    Stream(boost::asio::io_context &ioContext);
+    explicit Stream(boost::asio::io_context &ioContext);
     ~Stream() override = default;
 
     boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type,

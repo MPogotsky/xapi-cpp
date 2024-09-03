@@ -19,7 +19,7 @@ Connection::Connection(boost::asio::io_context &ioContext)
 {
 }
 
-std::optional<std::string> Connection::urlWithValidHost(const std::string &url)
+std::optional<std::string> Connection::urlWithValidHost(const std::string &url) const noexcept
 {
     if (url.starts_with("wss://") or url.starts_with("ws://"))
     {
