@@ -12,18 +12,17 @@ boost::asio::awaitable<void> run(boost::asio::io_context &context)
     xapi::Stream stream(context);
 
     // Add your credentials here
-    std::string accountId = "accountId";
-    std::string password = "password";
-    std::string host = "ws.xtb.com";
-    std::string type = "demo";
+    const std::string accountId = "accountId";
+    const std::string password = "password";
+    const std::string accountType = "demo";
     bool safe = true;
 
     try
     {
-        co_await socket.initSession(host, type);
+        co_await socket.initSession(accountType);
         auto streamsessionId = co_await socket.login(accountId, password);
-
-        co_await stream.initSession(host, type, streamsessionId);
+        co_await stream.initSession(accountType, streamsessionId);
+        
         co_await stream.getBalance();
         int counter = 0;
         while (counter < 5)

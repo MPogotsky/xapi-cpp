@@ -38,8 +38,6 @@ else()
     # LIBRARY SETUP OPTIONS ========================================
     include(GNUInstallDirs)
 
-    set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation Directory" FORCE)
-
     target_include_directories(Xapi
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"

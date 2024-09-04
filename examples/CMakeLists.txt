@@ -4,11 +4,11 @@ project(ExampleApp)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Xapi REQUIRED)
+
 set( SOURCES 
     main.cpp
 )
-
-find_package(Xapi REQUIRED)
 
 add_executable(ExampleApp
     ${SOURCES}
