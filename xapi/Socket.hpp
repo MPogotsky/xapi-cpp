@@ -22,7 +22,7 @@ class Socket final : protected internals::Connection
 
     bool safeMode;
 
-    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type);
+    boost::asio::awaitable<void> initSession(const std::string &accountType);
 
     boost::asio::awaitable<void> closeSession();
 

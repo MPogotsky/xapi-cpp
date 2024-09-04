@@ -20,7 +20,7 @@ class Stream final : protected internals::Connection
     explicit Stream(boost::asio::io_context &ioContext);
     ~Stream() override = default;
 
-    boost::asio::awaitable<void> initSession(const std::string &host, const std::string &type,
+    boost::asio::awaitable<void> initSession(const std::string &accountType,
                                              const std::string &streamSessionId);
 
     boost::asio::awaitable<void> closeSession();

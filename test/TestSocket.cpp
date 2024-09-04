@@ -84,7 +84,7 @@ class SocketTest : public testing::Test
 TEST_F(SocketTest, initSession_exception)
 {
     Socket socket(getIoContext());
-    EXPECT_THROW(runAwaitableVoid(socket.initSession(":/invalid", "demo")), exception::ConnectionClosed);
+    EXPECT_THROW(runAwaitableVoid(socket.initSession("invalid")), exception::ConnectionClosed);
 }
 
 TEST_F(SocketTest, closeSession_exception)

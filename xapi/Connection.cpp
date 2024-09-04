@@ -1,8 +1,6 @@
 #include "Connection.hpp"
 #include "Exceptions.hpp"
 
-#include <boost/url.hpp>
-
 namespace asio = boost::asio;
 namespace beast = boost::beast;
 namespace ip = boost::asio::ip;
@@ -15,33 +13,31 @@ namespace internals
 Connection::Connection(boost::asio::io_context &ioContext)
     : m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
       m_websocket(m_ioContext, m_sslContext), m_lastRequestTime(std::chrono::system_clock::now()),
-      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443")
+      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443"),
+      m_knownAccountTypes({"demo", "real"})
 {
 }
 
-std::optional<std::string> Connection::urlWithValidHost(const std::string &url) const noexcept
+void Connection::validateAccountType(const std::string &accountType) const
 {
-    if (url.starts_with("wss://") or url.starts_with("ws://"))
+    if (m_knownAccountTypes.find(accountType) == m_knownAccountTypes.end())
     {
-        return {};
+        std::string reason("Invalid account type: " + accountType);
+        throw exception::ConnectionClosed(reason);
     }
-    return std::string("wss://" + url);
 }
 
-boost::asio::awaitable<void> Connection::connect(const std::string &url)
+boost::asio::awaitable<void> Connection::connect(const boost::url &url)
 {
     const auto executor = co_await asio::this_coro::executor;
     try
     {
-        const auto parsedUrl = boost::urls::parse_uri(url).value();
-
         ip::tcp::resolver resolver(executor);
-        auto const results =
-            co_await resolver.async_resolve(parsedUrl.host(), m_websocketDefaultPort, asio::use_awaitable);
+        auto const results = co_await resolver.async_resolve(url.host(), m_websocketDefaultPort, asio::use_awaitable);
 
-        co_await establishSSLConnection(results, parsedUrl.host().c_str());
+        co_await establishSSLConnection(results, url.host().c_str());
 
-        co_await m_websocket.async_handshake(parsedUrl.host(), parsedUrl.path(), asio::use_awaitable);
+        co_await m_websocket.async_handshake(url.host(), url.path(), asio::use_awaitable);
         m_connectionEstablished = true;
     }
     catch (const boost::system::system_error &e)

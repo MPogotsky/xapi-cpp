@@ -85,7 +85,7 @@ class StreamTest : public testing::Test
 TEST_F(StreamTest, initSession_exception)
 {
     Stream stream(getIoContext());
-    EXPECT_THROW(runAwaitableVoid(stream.initSession("localhost", "price", "session123")), exception::ConnectionClosed);
+    EXPECT_THROW(runAwaitableVoid(stream.initSession("invalid", "session123")), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, closeSession_exception)

@@ -4,13 +4,14 @@
 namespace xapi
 {
 
-Socket::Socket(boost::asio::io_context &ioContext)
-: Connection(ioContext), safeMode(true) 
-{}
-
-boost::asio::awaitable<void> Socket::initSession(const std::string &host, const std::string &type)
+Socket::Socket(boost::asio::io_context &ioContext) : Connection(ioContext), safeMode(true)
 {
-    const std::string socketUrl = urlWithValidHost(host).value_or(host) + "/" + type;
+}
+
+boost::asio::awaitable<void> Socket::initSession(const std::string &accountType)
+{
+    validateAccountType(accountType);
+    const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", accountType);
     co_await connect(socketUrl);
 }
 
@@ -27,11 +28,12 @@ boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, 
     command["arguments"]["password"] = password;
     auto result = co_await request(command);
 
-    if(result["status"].asBool() != true) {
+    if (result["status"].asBool() != true)
+    {
         Json::StreamWriterBuilder writer;
         throw exception::LoginFailed(Json::writeString(writer, result));
     }
-    
+
     co_return result["streamSessionId"].asString();
 }
 
@@ -71,7 +73,8 @@ boost::asio::awaitable<Json::Value> Socket::getChartLastRequest(const std::strin
     co_return result;
 }
 
-boost::asio::awaitable<Json::Value> Socket::getChartRangeRequest(const std::string &symbol, int start, int end, PeriodCode period, int ticks)
+boost::asio::awaitable<Json::Value> Socket::getChartRangeRequest(const std::string &symbol, int start, int end,
+                                                                 PeriodCode period, int ticks)
 {
     Json::Value command;
     command["command"] = "getChartRangeRequest";
@@ -297,7 +300,7 @@ boost::asio::awaitable<Json::Value> Socket::tradeTransactionStatus(int order)
     co_return result;
 }
 
-boost::asio::awaitable<Json::Value> Socket::request(const Json::Value& command)
+boost::asio::awaitable<Json::Value> Socket::request(const Json::Value &command)
 {
     co_await makeRequest(command);
     auto result = co_await waitResponse();

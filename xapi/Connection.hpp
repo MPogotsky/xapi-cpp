@@ -5,11 +5,13 @@
 #include <boost/beast.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/beast/websocket/ssl.hpp>
+#include <boost/url.hpp>
 #include <chrono>
 #include <coroutine>
 #include <jsoncpp/json/json.h>
 #include <optional>
 #include <string>
+#include <unordered_set>
 
 namespace xapi
 {
@@ -31,11 +33,11 @@ class Connection
     explicit Connection(boost::asio::io_context &ioContext);
     virtual ~Connection() = default;
 
-    boost::asio::awaitable<void> connect(const std::string &url);
+    boost::asio::awaitable<void> connect(const boost::url &url);
 
     boost::asio::awaitable<void> disconnect();
 
-    std::optional<std::string> urlWithValidHost(const std::string &url) const noexcept;
+    void validateAccountType(const std::string &accountType) const;
 
     boost::asio::awaitable<void> makeRequest(const Json::Value &command);
     boost::asio::awaitable<Json::Value> waitResponse();
@@ -54,6 +56,7 @@ class Connection
 
     const std::chrono::milliseconds m_requestTimeout;
     const std::string m_websocketDefaultPort;
+    const std::unordered_set<std::string> m_knownAccountTypes;
 };
 
 } // namespace internals

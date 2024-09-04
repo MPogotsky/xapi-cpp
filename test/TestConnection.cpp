@@ -85,7 +85,7 @@ class ConnectionTest : public testing::Test
 TEST_F(ConnectionTest, connect_exception)
 {
     internals::Connection connection(getIoContext());
-    EXPECT_THROW(runAwaitableVoid(connection.connect("ws://localhost:99999")), exception::ConnectionClosed);
+    EXPECT_THROW(runAwaitableVoid(connection.connect(boost::url("wss://localhost:99999"))), exception::ConnectionClosed);
 }
 
 TEST_F(ConnectionTest, disconnect_exception)
@@ -94,29 +94,28 @@ TEST_F(ConnectionTest, disconnect_exception)
     EXPECT_NO_THROW(runAwaitableVoid(connection.disconnect()));
 }
 
-TEST_F(ConnectionTest, urlWithValidHost_okUrl)
+TEST_F(ConnectionTest, validateAccountType_ok)
 {
     internals::Connection connection(getIoContext());
 
-    std::vector<std::string> okUrls = {"wss://ok.example.com", "ws://ok.example.com"};
+    std::vector<std::string> okAccountType = {"demo", "real"};
 
-    for (const auto &testUrl : okUrls)
+    for (const auto &testAccountType : okAccountType)
     {
-        auto result = connection.urlWithValidHost(testUrl);
-        EXPECT_TRUE(!result.has_value());
+        EXPECT_NO_THROW(connection.validateAccountType(testAccountType));
     }
 }
 
-TEST_F(ConnectionTest, urlWithValidHost_badUrl)
+TEST_F(ConnectionTest, validateAccountType_bad)
 {
     internals::Connection connection(getIoContext());
 
-    std::string testCase = "bad.example.com";
-    std::string expectedResult = "wss://bad.example.com";
+    std::vector<std::string> okAccountType = {"demoStream", "invalid", ""};
 
-    auto result = connection.urlWithValidHost(testCase);
-    EXPECT_TRUE(result.has_value());
-    EXPECT_EQ(result.value(), expectedResult);
+    for (const auto &testAccountType : okAccountType)
+    {
+        EXPECT_THROW(connection.validateAccountType(testAccountType), exception::ConnectionClosed);
+    }
 }
 
 TEST_F(ConnectionTest, makeRequest_exception)
