@@ -1,8 +1,19 @@
 #pragma once
 
-namespace xapi {
+/**
+ * @file Enums.hpp
+ * @brief Defines the enumeration classes for the xAPI.
+ *
+ * This file contains the definition of the enumeration classes used in the XAPI.
+ */
 
-// Enum classes
+namespace xapi
+{
+
+/**
+ * @enum TradeCmd
+ * @brief Represents trading commands in the xAPI.
+ */
 enum class TradeCmd
 {
     BUY = 0,        // buy
@@ -16,6 +27,10 @@ enum class TradeCmd
     CREDIT = 7      // Read only
 };
 
+/**
+ * @enum TradeType
+ * @brief Represents the type of a trade in the xAPI.
+ */
 enum class TradeType
 {
     OPEN = 0,    // order open, used for opening orders
@@ -25,6 +40,10 @@ enum class TradeType
     DELETE = 4   // order delete, only used in the tradeTransaction command
 };
 
+/**
+ * @enum TradeStatus
+ * @brief Represents the status of a trade in the xAPI.
+ */
 enum class TradeStatus
 {
     ERROR = 0,    // error
@@ -33,6 +52,10 @@ enum class TradeStatus
     REJECTED = 4  // The transaction has been rejected
 };
 
+/**
+ * @enum PeriodCode
+ * @brief Represents the period code for a time period in the xAPI.
+ */
 enum class PeriodCode
 {
     PERIOD_M1 = 1,     // 1 minute

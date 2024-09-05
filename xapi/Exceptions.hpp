@@ -1,13 +1,26 @@
 #pragma once
 
+/**
+ * @file Exceptions.hpp
+ * @brief Defines the exception classes for the XAPI.
+ *
+ * This file contains the definition of the exception classes used in the XAPI.
+ */
+
 #include <exception>
-#include <iostream>
+#include <string>
 
 namespace xapi
 {
 namespace exception
 {
 
+/**
+ * @class LoginFailed
+ * @brief Exception class to indicate login failure.
+ *
+ * This exception is thrown when a login attempt fails.
+ */
 class LoginFailed final : public std::exception
 {
   public:
@@ -24,6 +37,12 @@ class LoginFailed final : public std::exception
     std::string m_message;
 };
 
+/**
+ * @class ConnectionClosed
+ * @brief Exception class to indicate that the connection has been closed.
+ *
+ * This exception is thrown when connection fails.
+ */
 class ConnectionClosed final : public std::exception
 {
   public:
