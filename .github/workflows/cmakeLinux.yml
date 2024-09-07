@@ -35,9 +35,10 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo add-apt-repository ppa:mhier/libboost-latest
+        sudo add-apt-repository ppa:mhier/libboost-latest -y
         sudo apt install libboost-system1.83-dev
         sudo apt install libboost-url1.83-dev
+        sudo apt install libboost-json1.83-dev
         sudo apt install libjsoncpp-dev libssl-dev libgtest-dev
 
 

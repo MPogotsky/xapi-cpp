@@ -17,6 +17,6 @@ add_executable(ExampleApp
 target_link_libraries(ExampleApp PRIVATE
     Boost::system
     Boost::url
-    jsoncpp_lib
+    Boost::json
     Xapi::Xapi
 )

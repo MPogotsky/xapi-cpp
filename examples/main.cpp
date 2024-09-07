@@ -3,7 +3,7 @@
 #include <string>
 
 #include <boost/asio.hpp>
-#include <jsoncpp/json/json.h>
+#include <boost/json.hpp>
 #include <xapi/Xapi.hpp>
 
 boost::asio::awaitable<void> run(boost::asio::io_context &context)
@@ -29,9 +29,7 @@ boost::asio::awaitable<void> run(boost::asio::io_context &context)
         {
             std::cout << "Processing " << counter << std::endl;
             auto result = co_await stream.listen();
-            Json::StreamWriterBuilder writer;
-            auto resultStr = Json::writeString(writer, result);
-            std::cout << resultStr << std::endl;
+            std::cout << boost::json::serialize(result) << std::endl;
 
             counter += 1;
         }
