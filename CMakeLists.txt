@@ -21,7 +21,6 @@ add_definitions(-DBUILD_RELEASE)
 include(${CMAKE_SOURCE_DIR}/CMakeHelpers.cmake)
 
 helper_FIND_BOOST_LIBS()
-helper_FIND_JSONCPP_LIB()
 helper_FIND_OPENSSL_LIB()
 
 add_subdirectory(xapi)

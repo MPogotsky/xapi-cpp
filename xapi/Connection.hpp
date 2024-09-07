@@ -11,9 +11,9 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/websocket/ssl.hpp>
+#include <boost/json.hpp>
 #include <boost/url.hpp>
 #include <chrono>
-#include <json/json.h>
 #include <string>
 #include <unordered_set>
 
@@ -76,14 +76,14 @@ class Connection
      * @return An awaitable void.
      * @throw xapi::exception::ConnectionClosed if the request fails.
      */
-    boost::asio::awaitable<void> makeRequest(const Json::Value &command);
+    boost::asio::awaitable<void> makeRequest(const boost::json::object &command);
 
     /**
      * @brief Waits for a response from the server.
-     * @return An awaitable Json::Value with response from the server.
+     * @return An awaitable boost::json::object with response from the server.
      * @throw xapi::exception::ConnectionClosed if the response fails.
      */
-    boost::asio::awaitable<Json::Value> waitResponse();
+    boost::asio::awaitable<boost::json::object> waitResponse();
 
   private:
     /**

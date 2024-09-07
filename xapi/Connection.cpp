@@ -80,7 +80,7 @@ boost::asio::awaitable<void> Connection::disconnect()
     }
 };
 
-boost::asio::awaitable<void> Connection::makeRequest(const Json::Value &command)
+boost::asio::awaitable<void> Connection::makeRequest(const boost::json::object &command)
 {
     const auto currentTime = std::chrono::system_clock::now();
     const auto duration = currentTime - m_lastRequestTime;
@@ -91,8 +91,7 @@ boost::asio::awaitable<void> Connection::makeRequest(const Json::Value &command)
 
     try
     {
-        const Json::StreamWriterBuilder writer;
-        const std::string message = Json::writeString(writer, command);
+        const std::string message = boost::json::serialize(command);
         co_await m_websocket.async_write(asio::buffer(message), asio::use_awaitable);
         m_lastRequestTime = std::chrono::system_clock::now();
     }
@@ -102,7 +101,7 @@ boost::asio::awaitable<void> Connection::makeRequest(const Json::Value &command)
     }
 }
 
-boost::asio::awaitable<Json::Value> Connection::waitResponse()
+boost::asio::awaitable<boost::json::object> Connection::waitResponse()
 {
     boost::beast::flat_buffer buffer;
     try
@@ -111,9 +110,7 @@ boost::asio::awaitable<Json::Value> Connection::waitResponse()
         auto dataString = beast::buffers_to_string(buffer.data());
         buffer.consume(buffer.size());
 
-        Json::Value jsonData;
-        Json::Reader reader;
-        reader.parse(dataString, jsonData);
+        boost::json::object jsonData = boost::json::parse(dataString).as_object();
 
         co_return jsonData;
     }

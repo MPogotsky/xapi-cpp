@@ -98,7 +98,7 @@ TEST_F(StreamTest, listen_exception)
 {
     Stream stream(getIoContext());
     
-    Json::Value result;
+    boost::json::object result;
     EXPECT_THROW(result = runAwaitable(stream.listen()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
 }

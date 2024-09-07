@@ -27,9 +27,9 @@ target_compile_options(Xapi PRIVATE
 target_link_libraries(Xapi PRIVATE
     Boost::system
     Boost::url
+    Boost::json
     OpenSSL::SSL
     OpenSSL::Crypto
-    jsoncpp_lib
 )
 
 if(NOT BUILD_RELEASE)

@@ -122,7 +122,7 @@ TEST_F(ConnectionTest, makeRequest_exception)
 {
     internals::Connection connection(getIoContext());
 
-    Json::Value command;
+    boost::json::object command;
     command["command"] = "invalid";
     EXPECT_THROW(runAwaitableVoid(connection.makeRequest(command)), exception::ConnectionClosed);
 }
@@ -131,7 +131,7 @@ TEST_F(ConnectionTest, waitResponse_exception)
 {
     internals::Connection connection(getIoContext());
 
-    Json::Value result;
+    boost::json::object result;
     EXPECT_THROW(result = runAwaitable(connection.waitResponse()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
 }

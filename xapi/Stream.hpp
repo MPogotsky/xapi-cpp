@@ -56,9 +56,9 @@ class Stream final : protected internals::Connection
 
     /**
      * @brief Starts listening for streaming data.
-     * @return An awaitable Json::Value with streaming data.
+     * @return An awaitable boost::json::object with streaming data.
      */
-    boost::asio::awaitable<Json::Value> listen();
+    boost::asio::awaitable<boost::json::object> listen();
 
     // Other methods omitted for brevity.
     // Description of the omitted methods: http://developers.xstore.pro/documentation/2.5.0#retrieving-trading-data

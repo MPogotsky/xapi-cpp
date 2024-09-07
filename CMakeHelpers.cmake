@@ -1,7 +1,7 @@
 # Helper macro to find boost libraries
 macro(helper_FIND_BOOST_LIBS)
 
-    find_package(Boost ${BOOST_VERSION_REQUIRED} REQUIRED COMPONENTS system url)
+    find_package(Boost ${BOOST_VERSION_REQUIRED} REQUIRED COMPONENTS system url json)
 
     if(NOT Boost_FOUND)
         message(FATAL_ERROR "Boost not found. Please install Boost version ${BOOST_VERSION_REQUIRED} or set Boost_DIR variable.")
@@ -11,14 +11,6 @@ macro(helper_FIND_BOOST_LIBS)
         include_directories(${Boost_INCLUDE_DIRS})
     endif()
 
-endmacro()
-
-#Helper macro to find json library
-macro(helper_FIND_JSONCPP_LIB)
-    find_package(jsoncpp REQUIRED)
-    if(NOT jsoncpp_FOUND)
-        message(FATAL_ERROR "jsoncpp not found. Please check if jsoncpp is installed.")
-    endif()
 endmacro()
 
 #Helper macro to find openSSL library

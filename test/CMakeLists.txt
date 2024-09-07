@@ -24,7 +24,7 @@ target_link_libraries(tests PRIVATE
     ${GTEST_LIBRARIES}
     Boost::system
     Boost::url
-    jsoncpp_lib
+    Boost::json
     Xapi
     GTest::gtest_main
 )
