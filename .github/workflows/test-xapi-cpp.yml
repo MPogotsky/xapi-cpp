@@ -39,7 +39,7 @@ jobs:
         sudo apt install libboost-system1.83-dev
         sudo apt install libboost-url1.83-dev
         sudo apt install libboost-json1.83-dev
-        sudo apt install libjsoncpp-dev libssl-dev libgtest-dev
+        sudo apt install libssl-dev libgtest-dev
 
 
     - name: Configure CMake
