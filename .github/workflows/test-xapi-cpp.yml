@@ -1,5 +1,3 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: Test xapi-cpp
 
 on:
@@ -10,18 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Release]
-        c_compiler: [gcc, clang]
-        include:
-          - c_compiler: gcc
-            cpp_compiler: g++
-          - c_compiler: clang
-            cpp_compiler: clang++
+        os: [ubuntu-22.04, ubuntu-24.04]
+        compiler: [g++, clang++]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
@@ -35,7 +28,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo add-apt-repository ppa:mhier/libboost-latest -y
+        if [ ${{ matrix.os }} == 'ubuntu-22.04' ]; then
+            sudo add-apt-repository ppa:mhier/libboost-latest -y
+        fi
         sudo apt install libboost-system1.83-dev
         sudo apt install libboost-url1.83-dev
         sudo apt install libboost-json1.83-dev
@@ -45,7 +40,7 @@ jobs:
     - name: Configure CMake
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
               -DBUILD_TESTS=ON \
               -S ${{ github.workspace }}
 
@@ -65,7 +60,7 @@ jobs:
         cd ${{ github.workspace }}/examples
         mkdir build
         cmake -B ${{ github.workspace }}/examples/build \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
               -S ${{ github.workspace }}/examples
         cmake --build ${{ github.workspace }}/examples/build
         
