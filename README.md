@@ -1,6 +1,8 @@
 # xStation5 API C++ Library
 
-[![Test xapi-cpp](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml/badge.svg)](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml)
+[![Test xapi-cpp](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml/badge.svg)](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml) 
+[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/MPogotsky/xapi-cpp/LICENSE)
+
 
 The xStation5 API C++ library provides a simple and easy-to-use API for interacting with the xStation5 trading platform. With this library, you can connect to the xStation5 platform, retrieve market data, and execute trades.
 
