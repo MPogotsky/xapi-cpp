@@ -1,6 +1,6 @@
 # xStation5 API C++ Library
 
-[![Test xapi-cpp](https://github.com/MPogotsky/xapi-cpp/blob/main/.github/workflows/cmakeLinux.yml/badge.svg)](https://github.com/MPogotsky/xapi-cpp/blob/main/.github/workflows/test-xapi-cpp.yml)
+[![Test xapi-cpp](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml/badge.svg)](https://github.com/MPogotsky/xapi-cpp/actions/workflows/test-xapi-cpp.yml)
 
 The xStation5 API C++ library provides a simple and easy-to-use API for interacting with the xStation5 trading platform. With this library, you can connect to the xStation5 platform, retrieve market data, and execute trades.
 
@@ -22,14 +22,25 @@ Make sure to list all necessary dependencies and tools required to build and ins
 - **Boost**: Version 1.83.0 or higher
 - **OpenSSL**: Version 3.0.2 or higher
 
+If you have the required dependencies installed, you can skip the next section and navigate straight to [Build & Install](#build--install).
+
 ### Installing Dependencies
 
-If you are using a package manager like `apt`, `brew`, include the commands for installing dependencies:
+To install the necessary dependencies, follow these steps:
+
+1. Update the package list:
 
 ```bash
 sudo apt-get update
+```
+
+2. Install the required packages:
+
+```bash
 sudo apt-get install build-essential cmake libssl-dev
 ```
+
+These commands will update the package list and install the necessary packages for building and installing the library.
 
 #### Boost 1.83.0 Installation
 
