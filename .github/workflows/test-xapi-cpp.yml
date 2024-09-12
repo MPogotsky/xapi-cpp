@@ -44,28 +44,23 @@ jobs:
 
     - name: Configure CMake
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -S ${{ github.workspace }}
+        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -DBUILD_TESTS=ON \
+              -S ${{ github.workspace }}
 
-    - name: Build For Tests
+    - name: Build unit tests
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
 
-    - name: Run Unit Tests
+    - name: Run unit tests
       run: |
         cd ${{ steps.strings.outputs.build-output-dir }}
         ./test/tests
 
-    - name: Build Library
-      run: |
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-              -DBUILD_RELEASE=ON \
-              -S ${{ github.workspace }}
-        cmake --build ${{ steps.strings.outputs.build-output-dir }}
-        sudo cmake --install ${{ steps.strings.outputs.build-output-dir }}
+    - name: Install Xapi library
+      run: sudo cmake --install ${{ steps.strings.outputs.build-output-dir }}
   
-    - name: Compile Examples
+    - name: Compile examples
       run: |
         cd ${{ github.workspace }}/examples
         mkdir build
