@@ -33,40 +33,21 @@ To install the necessary dependencies, follow these steps:
 1. Update the package list:
 
 ```bash
-sudo apt-get update
+sudo apt update
 ```
 
 2. Install the required packages:
 
 ```bash
-sudo apt-get install build-essential cmake libssl-dev
+sudo apt install libssl-dev libgtest-dev libboost-system1.83-dev libboost-url1.83-dev libboost-json1.83-dev
 ```
 
 These commands will update the package list and install the necessary packages for building and installing the library.
 
-#### Boost 1.83.0 Installation
+#### for Ubuntu 22.04
 
-To install Boost 1.83.0 (or higher), you have two options.
-
-##### Manual install
-
-1. Go to the [Boost website](https://www.boost.org/users/download/) and download the latest version of Boost.
-2. Extract the downloaded file to a directory of your choice.
-3. Open a terminal and navigate to the extracted Boost directory.
-4. Run the following commands to build and install Boost:
-
-    ```bash
-    ./bootstrap.sh
-    ./b2 install
-    ```
-
-5. Wait for the installation process to complete.
-
-If the installation was successful, you should see the Boost version number displayed.
-
-##### Install via PPA
-
-You can also install Boost via PPA. Follow these steps:
+Boost 1.83.0 package is not available by default on Ubuntu 22.04.
+You can install using PPA. Follow these steps:
 
 1. Run the following command to add the PPA repository:
 
@@ -80,23 +61,23 @@ You can also install Boost via PPA. Follow these steps:
     sudo apt update
     ```
 
-3. Install the required Boost packages:
+3. Install the required packages:
 
     ```bash
-    sudo apt install libboost-system1.83-dev libboost-url1.83-dev libboost-json1.   83-dev
+    sudo apt install libssl-dev libgtest-dev libboost-system1.83-dev libboost-url1.83-dev libboost-json1.83-dev
     ```
 
 ### Build & Install
-
 Step-by-step guide to build the project using CMake.
 
-1. Clone repo:
+1. Clone the repository and navigate to the `xapi-cpp` directory:
 
     ```bash
-    sudo apt update
+    git clone https://github.com/MPogotsky/xapi-cpp.git
+    cd xapi-cpp
     ```
 
-2. Create a build directory and navigate into it:
+2. Create a `build` directory and navigate into it:
 
     ```bash
     mkdir build
