@@ -69,7 +69,7 @@ boost::asio::awaitable<void> run(boost::asio::io_context &context)
 
     try
     {
-        co_await socket.initSession(type);
+        co_await socket.initSession(accountType);
         auto streamsessionId = co_await socket.login(accountId, password);
 
         const auto order_id = co_await executeTransaction(socket);
