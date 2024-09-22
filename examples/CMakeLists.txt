@@ -6,17 +6,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Xapi REQUIRED)
 
-set( SOURCES 
-    main.cpp
-)
+function(add_example name)
 
-add_executable(ExampleApp
-    ${SOURCES}
-)
+    add_executable(${name} ${name}.cpp)
+    target_link_libraries(${name} 
+        PRIVATE
+        Boost::system
+        Boost::json
+        Xapi::Xapi
+    )
 
-target_link_libraries(ExampleApp PRIVATE
-    Boost::system
-    Boost::url
-    Boost::json
-    Xapi::Xapi
-)
+endfunction()
+
+add_example(GetAllSymbols)
+add_example(GetBalance)
+add_example(GetCandles)
+add_example(TradeTransaction)
