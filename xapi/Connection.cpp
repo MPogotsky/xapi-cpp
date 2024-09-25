@@ -46,8 +46,8 @@ boost::asio::awaitable<void> Connection::connect(const boost::url &url)
     }
 };
 
-boost::asio::awaitable<void> Connection::establishSSLConnection(boost::asio::ip::tcp::resolver::results_type results,
-                                                                const char *host)
+boost::asio::awaitable<void> Connection::establishSSLConnection(
+    const boost::asio::ip::tcp::resolver::results_type &results, const char *host)
 {
     try
     {

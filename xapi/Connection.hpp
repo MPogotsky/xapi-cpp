@@ -93,7 +93,7 @@ class Connection
      * @return An awaitable void.
      * @throw xapi::exception::ConnectionClosed if the SSL connection fails.
      */
-    boost::asio::awaitable<void> establishSSLConnection(boost::asio::ip::tcp::resolver::results_type results,
+    boost::asio::awaitable<void> establishSSLConnection(boost::asio::ip::tcp::resolver::results_type &results,
                                                         const char *host);
 
     // The IO context for asynchronous operations.
