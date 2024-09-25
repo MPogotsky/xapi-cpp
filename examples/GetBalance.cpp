@@ -58,7 +58,7 @@ int main(int argc, char const *argv[])
 {
     boost::asio::io_context context;
 
-    boost::asio::co_spawn(context, run(std::ref(context)), boost::asio::detached);
+    boost::asio::co_spawn(context, run(context), boost::asio::detached);
 
     context.run();
     return 0;

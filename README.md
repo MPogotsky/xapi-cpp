@@ -97,7 +97,14 @@ Step-by-step guide to build the project using CMake.
     cmake --install . 
     ```
 
-### Runing Tests
+## Usage
+To use xAPI, an active account on the xStation5 trading platform is required. It could be a real account, or demo account. To create one, you can visit [xtb.com](https://www.xtb.com) 
+
+Once your account is set up, you can leverage the Xapi library to connect to the platform and start trading.
+
+For a detailed overview and practical usage of the library, refer to the [**Examples README**](examples/README.md). It contains step-by-step guides and illustrative examples to help you understand how to effectively use the library.
+
+## Runing Tests
 To build the tests, follow these steps:
 
 1. Navigate to the `build` directory.
