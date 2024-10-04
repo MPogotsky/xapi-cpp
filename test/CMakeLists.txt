@@ -5,6 +5,7 @@ set( SOURCES
     TestConnection.cpp
     TestSocket.cpp
     TestStream.cpp
+    TestXStationClient.cpp
 )
 
 add_executable( tests

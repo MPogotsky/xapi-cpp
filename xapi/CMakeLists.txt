@@ -4,6 +4,7 @@ set(XAPI_PUBLIC_H
     Connection.hpp
     Socket.hpp
     Stream.hpp
+    XStationClient.hpp
     Xapi.hpp
 )
 
@@ -12,6 +13,7 @@ set(XAPI_SOURCES
     Connection.cpp
     Socket.cpp
     Stream.cpp
+    XStationClient.cpp
 )
 
 add_library(Xapi SHARED ${XAPI_SOURCES})
