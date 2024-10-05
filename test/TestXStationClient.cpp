@@ -22,36 +22,6 @@ class XStationClientTest : public testing::Test
         return m_context;
     }
 
-    template <typename Awaitable> auto runAwaitable(Awaitable &&awaitable)
-    {
-        std::exception_ptr eptr;
-        using result_type = typename Awaitable::value_type;
-        result_type result;
-
-        boost::asio::co_spawn(
-            m_context,
-            [&]() -> boost::asio::awaitable<void> {
-                try
-                {
-                    result = co_await std::forward<Awaitable>(awaitable);
-                }
-                catch (...)
-                {
-                    eptr = std::current_exception();
-                }
-            },
-            boost::asio::detached);
-
-        m_context.run();
-
-        if (eptr)
-        {
-            std::rethrow_exception(eptr);
-        }
-
-        return result;
-    }
-
     template <typename Awaitable> auto runAwaitableVoid(Awaitable &&awaitable)
     {
         std::exception_ptr eptr;
@@ -83,7 +53,10 @@ class XStationClientTest : public testing::Test
 
 TEST_F(XStationClientTest, XStationClient_string_constructor)
 {
-    EXPECT_NO_THROW(auto client = std::make_unique<XStationClient>(getIoContext(), "test", "test", "demo"));
+    std::shared_ptr<XStationClient> client;
+    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), "test", "test", "demo"));
+    EXPECT_TRUE(client->socket == nullptr);
+    EXPECT_TRUE(client->stream == nullptr);
 }
 
 TEST_F(XStationClientTest, XStationClient_json_constructor)
@@ -94,10 +67,13 @@ TEST_F(XStationClientTest, XStationClient_json_constructor)
         {"accountType", "demo"}
     };
 
-    EXPECT_NO_THROW(auto client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
+    std::shared_ptr<XStationClient> client;
+    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
+    EXPECT_TRUE(client->socket == nullptr);
+    EXPECT_TRUE(client->stream == nullptr);
 }
 
-TEST_F(XStationClientTest, XStationClient_getSocket_exception)
+TEST_F(XStationClientTest, XStationClient_setupSocketConnection_exception)
 {
     const boost::json::object accountCredentials = {
         {"accountId", "test"},
@@ -107,10 +83,12 @@ TEST_F(XStationClientTest, XStationClient_getSocket_exception)
 
     std::unique_ptr<XStationClient> client;
     EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_THROW(runAwaitable(client->getSocket()), exception::LoginFailed);
+    EXPECT_THROW(runAwaitableVoid(client->setupSocketConnection()), exception::LoginFailed);
+    EXPECT_TRUE(client->socket != nullptr);
+    EXPECT_TRUE(client->stream == nullptr);
 }
 
-TEST_F(XStationClientTest, XStationClient_getStream_exception)
+TEST_F(XStationClientTest, XStationClient_setupStreamConnection_exception)
 {
     const boost::json::object accountCredentials = {
         {"accountId", "test"},
@@ -120,5 +98,34 @@ TEST_F(XStationClientTest, XStationClient_getStream_exception)
 
     std::unique_ptr<XStationClient> client;
     EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_THROW(runAwaitable(client->getStream()), exception::LoginFailed);
+    EXPECT_THROW(runAwaitableVoid(client->setupStreamConnection()), exception::LoginFailed);
+    EXPECT_TRUE(client->socket == nullptr);
+    // Socket is initialized, but not logged in, so no stream session ID is available, that is why no stream is created.
+    EXPECT_TRUE(client->stream == nullptr);
+}
+
+TEST_F(XStationClientTest, XStationClient_closeSocketConnection)
+{
+    const boost::json::object accountCredentials = {
+        {"accountId", "test"},
+        {"password", "test"},
+        {"accountType", "demo"}
+    };
+
+    std::unique_ptr<XStationClient> client;
+    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
+    EXPECT_NO_THROW(runAwaitableVoid(client->closeSocketConnection()));
+}
+
+TEST_F(XStationClientTest, XStationClient_closeStreamConnection)
+{
+    const boost::json::object accountCredentials = {
+        {"accountId", "test"},
+        {"password", "test"},
+        {"accountType", "demo"}
+    };
+
+    std::unique_ptr<XStationClient> client;
+    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
+    EXPECT_NO_THROW(runAwaitableVoid(client->closeStreamConnection()));
 }

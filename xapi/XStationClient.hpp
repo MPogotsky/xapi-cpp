@@ -60,16 +60,35 @@ class XStationClient
     ~XStationClient() = default;
 
     /**
-     * @brief Retrieves a configured Socket object for the client.
+     * @brief Performes setup of the socket connection.
      * @return An awaitable std::shared_ptr<xapi::Socket> object.
      */
-    boost::asio::awaitable<std::shared_ptr<xapi::Socket>> getSocket();
+    boost::asio::awaitable<void> setupSocketConnection();
 
     /**
-     * @brief Retrieves a configured Stream object for the client.
+     * @brief Performes setup of the stream connection.
      * @return An awaitable std::shared_ptr<xapi::Stream> object.
      */
-    boost::asio::awaitable<std::shared_ptr<xapi::Stream>> getStream() const;
+    boost::asio::awaitable<void> setupStreamConnection();
+
+    /**
+     * @brief Closes the socket connection.
+     * 
+     * Tries to logout from the server and close the connection gracefully. If the server responds with negative status, the connection
+     * is closed from the client side.
+     * 
+     * @return An awaitable void.
+     */
+    boost::asio::awaitable<void> closeSocketConnection();
+
+    /**
+     * @brief Closes the stream connection.
+     * @return An awaitable void.
+     */
+    boost::asio::awaitable<void> closeStreamConnection();
+
+    std::unique_ptr<xapi::Socket> socket;
+    std::unique_ptr<xapi::Stream> stream;
 
   private:
     boost::asio::io_context &m_ioContext;
