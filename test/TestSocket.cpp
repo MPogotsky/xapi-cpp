@@ -81,35 +81,23 @@ class SocketTest : public testing::Test
     boost::asio::io_context m_context;
 };
 
-TEST_F(SocketTest, initSession_exception)
-{
-    Socket socket(getIoContext());
-    EXPECT_THROW(runAwaitableVoid(socket.initSession("invalid")), exception::ConnectionClosed);
-}
-
-TEST_F(SocketTest, closeSession_exception)
-{
-    Socket socket(getIoContext());
-    EXPECT_NO_THROW(runAwaitableVoid(socket.closeSession()));
-}
 
 TEST_F(SocketTest, login_exception)
 {
     Socket socket(getIoContext());
     std::string accountId = "Invalid";
     std::string password = "Invalid123";
+    std::string accountType = "demo";
 
     std::string streamId;
-    EXPECT_THROW(streamId = runAwaitable(socket.login(accountId, password)), exception::ConnectionClosed);
+    EXPECT_THROW(streamId = runAwaitable(socket.login(accountId, password, accountType)), exception::LoginFailed);
     EXPECT_TRUE(streamId.empty());
 }
 
 TEST_F(SocketTest, logout_exception)
 {
     Socket socket(getIoContext());
-    boost::json::object result;
-    EXPECT_THROW(result = runAwaitable(socket.logout()), exception::ConnectionClosed);
-    EXPECT_TRUE(result.empty());
+    EXPECT_THROW(runAwaitableVoid(socket.logout()), exception::ConnectionClosed);
 }
 
 TEST_F(SocketTest, getAllSymbols_exception)

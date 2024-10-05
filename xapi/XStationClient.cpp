@@ -22,8 +22,7 @@ XStationClient::XStationClient(boost::asio::io_context &ioContext, const boost::
 boost::asio::awaitable<void> XStationClient::setupSocketConnection()
 {
     socket = std::make_unique<xapi::Socket>(m_ioContext);
-    co_await socket->initSession(m_accountType);
-    m_streamSessionId = co_await socket->login(m_accountId, m_password);
+    m_streamSessionId = co_await socket->login(m_accountId, m_password, m_accountType);
 }
 
 boost::asio::awaitable<void> XStationClient::setupStreamConnection()
@@ -42,12 +41,7 @@ boost::asio::awaitable<void> XStationClient::closeSocketConnection()
     {
         co_return;
     }
-    auto result = co_await socket->logout();
-    if (result["status"].as_bool() != true)
-    {
-        // If logout fails and server is not closed the connection gracefully, close it from client side.
-        co_await socket->closeSession();
-    }
+    co_await socket->logout();
 }
 
 boost::asio::awaitable<void> XStationClient::closeStreamConnection()

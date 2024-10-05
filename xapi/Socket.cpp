@@ -8,20 +8,11 @@ Socket::Socket(boost::asio::io_context &ioContext) : Connection(ioContext), safe
 {
 }
 
-boost::asio::awaitable<void> Socket::initSession(const std::string &accountType)
+boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, const std::string &password, const std::string &accountType)
 {
-    validateAccountType(accountType);
     const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", accountType);
     co_await connect(socketUrl);
-}
 
-boost::asio::awaitable<void> Socket::closeSession()
-{
-    co_await disconnect();
-}
-
-boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, const std::string &password)
-{
     boost::json::object command = {
         {"command", "login"},
         {"arguments", {
@@ -29,9 +20,7 @@ boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, 
             {"password", password}
         }}
     };
-
     auto result = co_await request(command);
-
     if (result["status"].as_bool() != true)
     {
         throw exception::LoginFailed(boost::json::serialize(result));
@@ -40,13 +29,17 @@ boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, 
     co_return result["streamSessionId"].as_string();
 }
 
-boost::asio::awaitable<boost::json::object> Socket::logout()
+boost::asio::awaitable<void> Socket::logout()
 {
     boost::json::object command = {
         {"command", "logout"}
     };
     auto result = co_await request(command);
-    co_return result;
+    if (result["status"].as_bool() != true)
+    {
+        // If logout fails and server is not closed the connection gracefully, close it from client side.
+        co_await disconnect();
+    }
 }
 
 boost::asio::awaitable<boost::json::object> Socket::getAllSymbols()

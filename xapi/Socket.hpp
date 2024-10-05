@@ -46,34 +46,25 @@ class Socket final : protected internals::Connection
     bool safeMode;
 
     /**
-     * @brief Initializes a session with the specified account type.
-     * @param accountType The type of account to initialize the session for.
-     * Possible values are:
-     *     - "demo" for a demo account,
-     *     - "real" for a real money account.
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> initSession(const std::string &accountType);
-
-    /**
-     * @brief Closes the current session.
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> closeSession();
-
-    /**
      * @brief Logs in to the server with the specified account ID and password.
      * @param accountId The account ID to log in with.
      * @param password The password for the account.
+     * @param accountType The type of account to initialize the session for.
+     * Possible values are:
+     * 
+     *     - "demo" for a demo account,
+     * 
+     *     - "real" for a real money account.
+     * 
      * @return An awaitable string containing the stream session ID.
      */
-    boost::asio::awaitable<std::string> login(const std::string &accountId, const std::string &password);
+    boost::asio::awaitable<std::string> login(const std::string &accountId, const std::string &password, const std::string &accountType);
 
     /**
-     * @brief Logs out of the server.
+     * @brief Logs out of the server. If the logout fails, the connection is closed from the client side.
      * @return An awaitable boost::json::object containing the logout status.
      */
-    boost::asio::awaitable<boost::json::object> logout();
+    boost::asio::awaitable<void> logout();
 
     // Other methods omitted for brevity.
     // Description of the omitted methods: http://developers.xstore.pro/documentation/2.5.0#retrieving-trading-data
