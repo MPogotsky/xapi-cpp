@@ -14,6 +14,7 @@ function(add_example name)
         PRIVATE
         Boost::system
         Boost::json
+        Boost::url
         Xapi::Xapi
     )
 
@@ -23,4 +24,3 @@ add_example(GetAllSymbols)
 add_example(GetBalance)
 add_example(GetCandles)
 add_example(TradeTransaction)
-add_example(RetrieveStreamSessionId)

@@ -8,22 +8,22 @@
 
 boost::asio::awaitable<void> run(boost::asio::io_context &context)
 {
-    xapi::Socket socket(context);
+    const boost::json::object accountCredentials = {
+        {"accountId", "accountId"},
+        {"password", "password"},
+        {"accountType", "demo"}
+    };
 
-    // Add your credentials here
-    const std::string accountId = "accountId";
-    const std::string password = "password";
-    const std::string accountType = "demo";
+    xapi::XStationClient user(context, accountCredentials);
 
     try
     {
-        co_await socket.initSession(accountType);
-        auto streamsessionId = co_await socket.login(accountId, password);
+        co_await user.login();
 
-        auto result = co_await socket.getAllSymbols();
+        auto result = co_await user.getAllSymbols();
         std::cout << boost::json::serialize(result) << std::endl;
 
-        co_await socket.closeSession();
+        co_await user.logout();
     }
     catch (xapi::exception::ConnectionClosed &e)
     {

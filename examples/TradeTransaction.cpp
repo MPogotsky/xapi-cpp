@@ -6,9 +6,9 @@
 #include <boost/json.hpp>
 #include <xapi/Xapi.hpp>
 
-boost::asio::awaitable<int64_t> executeTransaction(xapi::Socket &socket)
+boost::asio::awaitable<int64_t> executeTransaction(xapi::XStationClient &user)
 {
-    auto response = co_await socket.tradeTransaction("US100", xapi::TradeCmd::BUY_LIMIT, xapi::TradeType::OPEN, 18000.00f,
+    auto response = co_await user.tradeTransaction("US100", xapi::TradeCmd::BUY_LIMIT, xapi::TradeType::OPEN, 18000.00f,
                                                         0.5f, 0.0f, 0.0f, 0.0f, 0, 0, "");
 
     if (response["status"].as_bool() != true)
@@ -23,9 +23,9 @@ boost::asio::awaitable<int64_t> executeTransaction(xapi::Socket &socket)
     co_return order;
 }
 
-boost::asio::awaitable<void> checkTransactionStatus(xapi::Socket &socket, int64_t order)
+boost::asio::awaitable<void> checkTransactionStatus(xapi::XStationClient &user, int64_t order)
 {
-    auto response = co_await socket.tradeTransactionStatus(order);
+    auto response = co_await user.tradeTransactionStatus(order);
     if (response["status"].as_bool() != true)
     {
         std::cout << "Failed to trade a transaction: " << response << std::endl;
@@ -58,24 +58,23 @@ boost::asio::awaitable<void> checkTransactionStatus(xapi::Socket &socket, int64_
 
 boost::asio::awaitable<void> run(boost::asio::io_context &context)
 {
-    xapi::Socket socket(context);
+    const boost::json::object accountCredentials = {
+        {"accountId", "accountId"},
+        {"password", "password"},
+        {"accountType", "demo"}
+    };
 
-    // Add your credentials here
-    const std::string accountId = "accountId";
-    const std::string password = "password";
-    const std::string accountType = "demo";
-
-    socket.safeMode = false;
+    xapi::XStationClient user(context, accountCredentials);
+    user.setSafeMode(false);
 
     try
     {
-        co_await socket.initSession(accountType);
-        auto streamsessionId = co_await socket.login(accountId, password);
+        co_await user.login();
 
-        const auto order_id = co_await executeTransaction(socket);
-        co_await checkTransactionStatus(socket, order_id);
+        const auto order_id = co_await executeTransaction(user);
+        co_await checkTransactionStatus(user, order_id);
 
-        co_await socket.closeSession();
+        co_await user.logout();
     }
     catch (xapi::exception::ConnectionClosed &e)
     {

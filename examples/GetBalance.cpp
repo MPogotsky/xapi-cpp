@@ -5,9 +5,12 @@
 #include <boost/json.hpp>
 #include <xapi/Xapi.hpp>
 
-boost::asio::awaitable<void> printBalance(xapi::Stream &stream)
+boost::asio::awaitable<void> printBalance(xapi::XClientStream &stream)
 {
     co_await stream.getBalance();
+    // Use getKeepAlive, to keep the connection alive
+    co_await stream.getKeepAlive();
+
     int counter = 0;
     while (counter < 5)
     {
@@ -16,29 +19,33 @@ boost::asio::awaitable<void> printBalance(xapi::Stream &stream)
         std::cout << boost::json::serialize(result) << std::endl;
         counter += 1;
     }
+
     co_await stream.stopBalance();
+    co_await stream.stopKeepAlive();
+
+    co_return;
 }
 
 boost::asio::awaitable<void> run(boost::asio::io_context &context)
 {
-    xapi::Socket socket(context);
-    xapi::Stream stream(context);
+    const boost::json::object accountCredentials = {
+        {"accountId", "accountId"},
+        {"password", "password"},
+        {"accountType", "demo"}
+    };
 
-    // Add your credentials here
-    const std::string accountId = "accountId";
-    const std::string password = "password";
-    const std::string accountType = "demo";
+    xapi::XStationClient user(context, accountCredentials);
 
     try
     {
-        co_await socket.initSession(accountType);
-        auto streamsessionId = co_await socket.login(accountId, password);
-        co_await stream.initSession(accountType, streamsessionId);
-        
-        co_await printBalance(stream);
+        co_await user.login();    
+        auto userStream = user.getClientStream();
+        co_await userStream.open();
 
-        co_await stream.closeSession();
-        co_await socket.closeSession();
+        co_await printBalance(userStream);
+
+        co_await userStream.close();
+        co_await user.logout();
     }
     catch (xapi::exception::ConnectionClosed &e)
     {
