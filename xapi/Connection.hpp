@@ -15,7 +15,6 @@
 #include <boost/url.hpp>
 #include <chrono>
 #include <string>
-#include <unordered_set>
 
 namespace xapi
 {
@@ -64,13 +63,6 @@ class Connection
     boost::asio::awaitable<void> disconnect();
 
     /**
-     * @brief Validates the account type.
-     * @param accountType The account type to validate.
-     * @throw xapi::exception::ConnectionClosed if the account type is not known.
-     */
-    void validateAccountType(const std::string &accountType) const;
-
-    /**
      * @brief Makes an asynchronous request to the server.
      * @param command The command to send as a JSON value.
      * @return An awaitable void.
@@ -116,9 +108,6 @@ class Connection
 
     // Default port for WebSocket connections.
     const std::string m_websocketDefaultPort;
-
-    // Set of known account types.
-    const std::unordered_set<std::string> m_knownAccountTypes;
 };
 
 } // namespace internals

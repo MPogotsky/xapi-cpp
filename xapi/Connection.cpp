@@ -1,6 +1,7 @@
 #include "Connection.hpp"
 #include "Exceptions.hpp"
 
+// TODO: Remove this namespace alias
 namespace asio = boost::asio;
 namespace beast = boost::beast;
 namespace ip = boost::asio::ip;
@@ -13,18 +14,8 @@ namespace internals
 Connection::Connection(boost::asio::io_context &ioContext)
     : m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
       m_websocket(m_ioContext, m_sslContext), m_lastRequestTime(std::chrono::system_clock::now()),
-      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443"),
-      m_knownAccountTypes({"demo", "real"})
+      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443")
 {
-}
-
-void Connection::validateAccountType(const std::string &accountType) const
-{
-    if (m_knownAccountTypes.find(accountType) == m_knownAccountTypes.end())
-    {
-        std::string reason("Invalid account type: " + accountType);
-        throw exception::ConnectionClosed(reason);
-    }
 }
 
 boost::asio::awaitable<void> Connection::connect(const boost::url &url)

@@ -10,6 +10,7 @@
 
 #include "Socket.hpp"
 #include "XClientStream.hpp"
+#include <unordered_set>
 
 namespace xapi
 {
@@ -64,7 +65,7 @@ class XStationClient final : public Socket
 
     boost::asio::awaitable<void> logout();
 
-    XClientStream getClientStream();
+    XClientStream getClientStream() const;
 
   private:
     boost::asio::io_context &m_ioContext;
@@ -74,6 +75,16 @@ class XStationClient final : public Socket
     const std::string m_accountType;
 
     std::string m_streamSessionId;
+
+    // Set of known account types.
+    const std::unordered_set<std::string> m_knownAccountTypes;
+
+    /**
+     * @brief Validates the account type.
+     * @param accountType The account type to validate.
+     * @throw xapi::exception::ConnectionClosed if the account type is not known.
+     */
+    void validateAccountType(const std::string &accountType) const;
 };
 
 } // namespace xapi

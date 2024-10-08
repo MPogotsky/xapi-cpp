@@ -7,7 +7,7 @@ namespace xapi
 XStationClient::XStationClient(boost::asio::io_context &ioContext, const std::string &accountId,
                                const std::string &password, const std::string &accountType)
     : Socket(ioContext), m_ioContext(ioContext), m_accountId(accountId), m_password(password),
-      m_accountType(accountType), m_streamSessionId("")
+      m_accountType(accountType), m_streamSessionId(""), m_knownAccountTypes({"demo", "real"})
 {
 }
 
@@ -20,6 +20,8 @@ XStationClient::XStationClient(boost::asio::io_context &ioContext, const boost::
 }
 
 boost::asio::awaitable<void> XStationClient::login() {
+    validateAccountType(m_accountType);
+
     const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", m_accountType);
     co_await connect(socketUrl);
 
@@ -51,9 +53,18 @@ boost::asio::awaitable<void> XStationClient::logout() {
     }
 }
 
-XClientStream XStationClient::getClientStream() {
+XClientStream XStationClient::getClientStream() const {
     XClientStream stream(m_ioContext, m_accountType, m_streamSessionId);
     return stream;
+}
+
+void XStationClient::validateAccountType(const std::string &accountType) const
+{
+    if (m_knownAccountTypes.find(accountType) == m_knownAccountTypes.end())
+    {
+        std::string reason("Invalid account type: " + accountType);
+        throw exception::LoginFailed(reason);
+    }
 }
 
 } // namespace xapi
