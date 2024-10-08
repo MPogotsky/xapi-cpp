@@ -3,6 +3,8 @@
 
 namespace xapi
 {
+namespace internals
+{
 
 Socket::Socket(boost::asio::io_context &ioContext) : Connection(ioContext), m_safeMode(true)
 {
@@ -321,4 +323,5 @@ boost::asio::awaitable<boost::json::object> Socket::request(const boost::json::o
     co_return result;
 }
 
+} // namespace internals
 } // namespace xapi

@@ -81,10 +81,14 @@ class SocketTest : public testing::Test
     boost::asio::io_context m_context;
 };
 
+TEST_F(SocketTest, constructor)
+{
+    EXPECT_NO_THROW(internals::Socket socket = internals::Socket(getIoContext()));
+}
 
 TEST_F(SocketTest, getAllSymbols_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getAllSymbols()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -92,7 +96,7 @@ TEST_F(SocketTest, getAllSymbols_exception)
 
 TEST_F(SocketTest, getCalendar_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getCalendar()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -100,7 +104,7 @@ TEST_F(SocketTest, getCalendar_exception)
 
 TEST_F(SocketTest, getChartLastRequest_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getChartLastRequest("EURUSD", 1625097600, PeriodCode::PERIOD_M1)),
                  exception::ConnectionClosed);
@@ -109,7 +113,7 @@ TEST_F(SocketTest, getChartLastRequest_exception)
 
 TEST_F(SocketTest, getChartRangeRequest_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(
         result = runAwaitable(socket.getChartRangeRequest("EURUSD", 1625097600, 1625184000, PeriodCode::PERIOD_M1, 10)),
@@ -119,7 +123,7 @@ TEST_F(SocketTest, getChartRangeRequest_exception)
 
 TEST_F(SocketTest, getCommissionDef_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getCommissionDef("EURUSD", 1.0f)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -127,7 +131,7 @@ TEST_F(SocketTest, getCommissionDef_exception)
 
 TEST_F(SocketTest, getCurrentUserData_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getCurrentUserData()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -135,7 +139,7 @@ TEST_F(SocketTest, getCurrentUserData_exception)
 
 TEST_F(SocketTest, getIbsHistory_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getIbsHistory(1625097600, 1625184000)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -143,7 +147,7 @@ TEST_F(SocketTest, getIbsHistory_exception)
 
 TEST_F(SocketTest, getMarginLevel_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getMarginLevel()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -151,7 +155,7 @@ TEST_F(SocketTest, getMarginLevel_exception)
 
 TEST_F(SocketTest, getMarginTrade_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getMarginTrade("EURUSD", 1.0f)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -159,7 +163,7 @@ TEST_F(SocketTest, getMarginTrade_exception)
 
 TEST_F(SocketTest, getNews_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getNews(1625097600, 1625184000)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -167,7 +171,7 @@ TEST_F(SocketTest, getNews_exception)
 
 TEST_F(SocketTest, getProfitCalculation_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getProfitCalculation("EURUSD", 0, 1.1000f, 1.1050f, 1.0f)),
                  exception::ConnectionClosed);
@@ -176,7 +180,7 @@ TEST_F(SocketTest, getProfitCalculation_exception)
 
 TEST_F(SocketTest, getServerTime_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getServerTime()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -184,7 +188,7 @@ TEST_F(SocketTest, getServerTime_exception)
 
 TEST_F(SocketTest, getStepRules_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getStepRules()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -192,7 +196,7 @@ TEST_F(SocketTest, getStepRules_exception)
 
 TEST_F(SocketTest, getSymbol_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getSymbol("EURUSD")), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -200,7 +204,7 @@ TEST_F(SocketTest, getSymbol_exception)
 
 TEST_F(SocketTest, getTickPrices_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getTickPrices({"EURUSD", "GBPUSD"}, 1625097600, 1)),
                  exception::ConnectionClosed);
@@ -209,7 +213,7 @@ TEST_F(SocketTest, getTickPrices_exception)
 
 TEST_F(SocketTest, getTradeRecords_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getTradeRecords({123456, 789012})), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -217,7 +221,7 @@ TEST_F(SocketTest, getTradeRecords_exception)
 
 TEST_F(SocketTest, getTrades_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getTrades(true)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -225,7 +229,7 @@ TEST_F(SocketTest, getTrades_exception)
 
 TEST_F(SocketTest, getTradesHistory_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getTradesHistory(1625097600, 1625184000)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -233,7 +237,7 @@ TEST_F(SocketTest, getTradesHistory_exception)
 
 TEST_F(SocketTest, getTradingHours_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getTradingHours({"EURUSD", "GBPUSD"})), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -241,7 +245,7 @@ TEST_F(SocketTest, getTradingHours_exception)
 
 TEST_F(SocketTest, getVersion_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.getVersion()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -249,7 +253,7 @@ TEST_F(SocketTest, getVersion_exception)
 
 TEST_F(SocketTest, ping_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.ping()), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());
@@ -257,7 +261,7 @@ TEST_F(SocketTest, ping_exception)
 
 TEST_F(SocketTest, tradeTransaction_safeMode_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_NO_THROW(result = runAwaitable(socket.tradeTransaction("EURUSD", TradeCmd::BUY, TradeType::OPEN, 1.1000f,
                                                                   1.0f, 0.0f, 0.0f, 123456, 0, 0, "Test comment")));
@@ -272,7 +276,7 @@ TEST_F(SocketTest, tradeTransaction_safeMode_exception)
 
 TEST_F(SocketTest, tradeTransaction_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     socket.setSafeMode(false);
 
     boost::json::object result;
@@ -284,7 +288,7 @@ TEST_F(SocketTest, tradeTransaction_exception)
 
 TEST_F(SocketTest, tradeTransactionStatus_exception)
 {
-    Socket socket(getIoContext());
+    internals::Socket socket(getIoContext());
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.tradeTransactionStatus(123456)), exception::ConnectionClosed);
     EXPECT_TRUE(result.empty());

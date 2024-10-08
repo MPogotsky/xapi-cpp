@@ -13,6 +13,8 @@
 
 namespace xapi
 {
+namespace internals
+{
 
 /**
  * @brief Encapsulates operations for retrieving trading data from xAPI.
@@ -111,4 +113,5 @@ class Socket : protected internals::Connection
     bool m_safeMode;
 };
 
+} // namespace internals
 } // namespace xapi

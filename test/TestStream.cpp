@@ -84,7 +84,7 @@ class StreamTest : public testing::Test
 
 TEST_F(StreamTest, listen_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(stream.listen()), exception::ConnectionClosed);
@@ -93,102 +93,102 @@ TEST_F(StreamTest, listen_exception)
 
 TEST_F(StreamTest, getBalance_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getBalance()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopBalance_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopBalance()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getCandles_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getCandles("EURUSD")), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopCandles_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopCandles("EURUSD")), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getKeepAlive_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getKeepAlive()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopKeepAlive_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopKeepAlive()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getNews_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getNews()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopNews_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopNews()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getProfits_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getProfits()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopProfits_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopProfits()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getTickPrices_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getTickPrices("EURUSD", 100, 10)), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopTickPrices_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopTickPrices("EURUSD")), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getTrades_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getTrades()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopTrades_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopTrades()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, getTradeStatus_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.getTradeStatus()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, stopTradeStatus_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.stopTradeStatus()), exception::ConnectionClosed);
 }
 
 TEST_F(StreamTest, ping_exception)
 {
-    Stream stream(getIoContext(), "abc123");
+    internals::Stream stream(getIoContext(), "abc123");
     EXPECT_THROW(runAwaitableVoid(stream.ping()), exception::ConnectionClosed);
 }

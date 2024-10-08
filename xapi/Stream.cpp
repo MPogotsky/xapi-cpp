@@ -3,6 +3,8 @@
 
 namespace xapi
 {
+namespace internals
+{
 
 Stream::Stream(boost::asio::io_context &ioContext, const std::string& streamSessionId ) : Connection(ioContext), m_streamSessionId(streamSessionId)
 {
@@ -165,4 +167,5 @@ boost::asio::awaitable<void> Stream::ping()
     co_await makeRequest(command);
 }
 
+} // namespace internals
 } // namespace xapi

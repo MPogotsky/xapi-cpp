@@ -20,7 +20,7 @@ namespace xapi
  * The XStationClient class provides a high-level interface for managing xStation client and retreiving xapi::Socket and
  * xapi::Stream objects that can be used to interact with xAPI.
  */
-class XStationClient final : public Socket
+class XStationClient final : public internals::Socket
 {
   public:
     XStationClient() = delete;

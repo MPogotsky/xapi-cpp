@@ -5,7 +5,7 @@
 namespace xapi
 {
 
-class XClientStream final : public Stream
+class XClientStream final : public internals::Stream
 {
   public:
     XClientStream() = delete;

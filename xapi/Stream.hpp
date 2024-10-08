@@ -12,6 +12,8 @@
 
 namespace xapi
 {
+namespace internals
+{
 
 /**
  * @brief Encapsulates operations for streaming real-time data from xAPI.
@@ -85,4 +87,5 @@ class Stream : protected internals::Connection
     const std::string m_streamSessionId;
 };
 
+} // namespace internals
 } // namespace xapi
