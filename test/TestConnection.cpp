@@ -94,30 +94,6 @@ TEST_F(ConnectionTest, disconnect_exception)
     EXPECT_NO_THROW(runAwaitableVoid(connection.disconnect()));
 }
 
-TEST_F(ConnectionTest, validateAccountType_ok)
-{
-    internals::Connection connection(getIoContext());
-
-    std::vector<std::string> okAccountType = {"demo", "real"};
-
-    for (const auto &testAccountType : okAccountType)
-    {
-        EXPECT_NO_THROW(connection.validateAccountType(testAccountType));
-    }
-}
-
-TEST_F(ConnectionTest, validateAccountType_bad)
-{
-    internals::Connection connection(getIoContext());
-
-    std::vector<std::string> okAccountType = {"demoStream", "invalid", ""};
-
-    for (const auto &testAccountType : okAccountType)
-    {
-        EXPECT_THROW(connection.validateAccountType(testAccountType), exception::ConnectionClosed);
-    }
-}
-
 TEST_F(ConnectionTest, makeRequest_exception)
 {
     internals::Connection connection(getIoContext());

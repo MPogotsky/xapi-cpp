@@ -82,24 +82,6 @@ class SocketTest : public testing::Test
 };
 
 
-TEST_F(SocketTest, login_exception)
-{
-    Socket socket(getIoContext());
-    std::string accountId = "Invalid";
-    std::string password = "Invalid123";
-    std::string accountType = "demo";
-
-    std::string streamId;
-    EXPECT_THROW(streamId = runAwaitable(socket.login(accountId, password, accountType)), exception::LoginFailed);
-    EXPECT_TRUE(streamId.empty());
-}
-
-TEST_F(SocketTest, logout_exception)
-{
-    Socket socket(getIoContext());
-    EXPECT_THROW(runAwaitableVoid(socket.logout()), exception::ConnectionClosed);
-}
-
 TEST_F(SocketTest, getAllSymbols_exception)
 {
     Socket socket(getIoContext());
@@ -291,7 +273,7 @@ TEST_F(SocketTest, tradeTransaction_safeMode_exception)
 TEST_F(SocketTest, tradeTransaction_exception)
 {
     Socket socket(getIoContext());
-    socket.safeMode = false;
+    socket.setSafeMode(false);
 
     boost::json::object result;
     EXPECT_THROW(result = runAwaitable(socket.tradeTransaction("EURUSD", TradeCmd::BUY, TradeType::OPEN, 1.1000f, 1.0f,

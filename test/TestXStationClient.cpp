@@ -53,10 +53,7 @@ class XStationClientTest : public testing::Test
 
 TEST_F(XStationClientTest, XStationClient_string_constructor)
 {
-    std::shared_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), "test", "test", "demo"));
-    EXPECT_TRUE(client->socket == nullptr);
-    EXPECT_TRUE(client->stream == nullptr);
+    EXPECT_NO_THROW(XStationClient client = XStationClient(getIoContext(), "test", "test", "demo"));
 }
 
 TEST_F(XStationClientTest, XStationClient_json_constructor)
@@ -67,13 +64,10 @@ TEST_F(XStationClientTest, XStationClient_json_constructor)
         {"accountType", "demo"}
     };
 
-    std::shared_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_TRUE(client->socket == nullptr);
-    EXPECT_TRUE(client->stream == nullptr);
+    EXPECT_NO_THROW(XStationClient client = XStationClient(getIoContext(), accountCredentials));
 }
 
-TEST_F(XStationClientTest, XStationClient_setupSocketConnection_exception)
+TEST_F(XStationClientTest, XStationClient_login_exception)
 {
     const boost::json::object accountCredentials = {
         {"accountId", "test"},
@@ -81,14 +75,23 @@ TEST_F(XStationClientTest, XStationClient_setupSocketConnection_exception)
         {"accountType", "demo"}
     };
 
-    std::unique_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_THROW(runAwaitableVoid(client->setupSocketConnection()), exception::LoginFailed);
-    EXPECT_TRUE(client->socket != nullptr);
-    EXPECT_TRUE(client->stream == nullptr);
+    XStationClient client = XStationClient(getIoContext(), accountCredentials);
+    EXPECT_THROW(runAwaitableVoid(client.login()), exception::LoginFailed);
 }
 
-TEST_F(XStationClientTest, XStationClient_setupStreamConnection_exception)
+TEST_F(XStationClientTest, XStationClient_login_exception_invalid_account_type)
+{
+    const boost::json::object accountCredentials = {
+        {"accountId", "test"},
+        {"password", "test"},
+        {"accountType", "asdasda"}
+    };
+
+    XStationClient client = XStationClient(getIoContext(), accountCredentials);
+    EXPECT_THROW(runAwaitableVoid(client.login()), exception::LoginFailed);
+}
+
+TEST_F(XStationClientTest, XStationClient_logout_exception)
 {
     const boost::json::object accountCredentials = {
         {"accountId", "test"},
@@ -96,36 +99,6 @@ TEST_F(XStationClientTest, XStationClient_setupStreamConnection_exception)
         {"accountType", "demo"}
     };
 
-    std::unique_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_THROW(runAwaitableVoid(client->setupStreamConnection()), exception::LoginFailed);
-    EXPECT_TRUE(client->socket == nullptr);
-    // Socket is initialized, but not logged in, so no stream session ID is available, that is why no stream is created.
-    EXPECT_TRUE(client->stream == nullptr);
-}
-
-TEST_F(XStationClientTest, XStationClient_closeSocketConnection)
-{
-    const boost::json::object accountCredentials = {
-        {"accountId", "test"},
-        {"password", "test"},
-        {"accountType", "demo"}
-    };
-
-    std::unique_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_NO_THROW(runAwaitableVoid(client->closeSocketConnection()));
-}
-
-TEST_F(XStationClientTest, XStationClient_closeStreamConnection)
-{
-    const boost::json::object accountCredentials = {
-        {"accountId", "test"},
-        {"password", "test"},
-        {"accountType", "demo"}
-    };
-
-    std::unique_ptr<XStationClient> client;
-    EXPECT_NO_THROW(client = std::make_unique<XStationClient>(getIoContext(), accountCredentials));
-    EXPECT_NO_THROW(runAwaitableVoid(client->closeStreamConnection()));
+    XStationClient client = XStationClient(getIoContext(), accountCredentials);
+    EXPECT_THROW(runAwaitableVoid(client.logout()), exception::ConnectionClosed);
 }
