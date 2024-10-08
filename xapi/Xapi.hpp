@@ -8,3 +8,4 @@
 #include "Socket.hpp"
 #include "Stream.hpp"
 #include "XStationClient.hpp"
+#include "XClientStream.hpp"

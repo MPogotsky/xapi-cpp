@@ -4,42 +4,12 @@
 namespace xapi
 {
 
-Socket::Socket(boost::asio::io_context &ioContext) : Connection(ioContext), safeMode(true)
+Socket::Socket(boost::asio::io_context &ioContext) : Connection(ioContext), m_safeMode(true)
 {
 }
 
-boost::asio::awaitable<std::string> Socket::login(const std::string &accountId, const std::string &password, const std::string &accountType)
-{
-    const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", accountType);
-    co_await connect(socketUrl);
-
-    boost::json::object command = {
-        {"command", "login"},
-        {"arguments", {
-            {"userId", accountId},
-            {"password", password}
-        }}
-    };
-    auto result = co_await request(command);
-    if (result["status"].as_bool() != true)
-    {
-        throw exception::LoginFailed(boost::json::serialize(result));
-    }
-
-    co_return result["streamSessionId"].as_string();
-}
-
-boost::asio::awaitable<void> Socket::logout()
-{
-    boost::json::object command = {
-        {"command", "logout"}
-    };
-    auto result = co_await request(command);
-    if (result["status"].as_bool() != true)
-    {
-        // If logout fails and server is not closed the connection gracefully, close it from client side.
-        co_await disconnect();
-    }
+void Socket::setSafeMode(bool safeMode) {
+    m_safeMode = safeMode;
 }
 
 boost::asio::awaitable<boost::json::object> Socket::getAllSymbols()
@@ -300,7 +270,7 @@ boost::asio::awaitable<boost::json::object> Socket::tradeTransaction(const std::
                                                              int expiration, int offset,
                                                              const std::string &customComment)
 {
-    if (safeMode) {
+    if (m_safeMode) {
         boost::json::object response = {
             {"status", false},
             {"errorCode", "N/A"},

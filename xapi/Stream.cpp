@@ -4,22 +4,8 @@
 namespace xapi
 {
 
-Stream::Stream(boost::asio::io_context &ioContext) : Connection(ioContext), m_streamSessionId("")
+Stream::Stream(boost::asio::io_context &ioContext, const std::string& streamSessionId ) : Connection(ioContext), m_streamSessionId(streamSessionId)
 {
-}
-
-boost::asio::awaitable<void> Stream::initSession(const std::string &accountType,
-                                                 const std::string &streamSessionId)
-{
-    validateAccountType(accountType);
-    const boost::url streamUrl = boost::urls::format("wss://ws.xtb.com/{}Stream", accountType);
-    co_await connect(streamUrl);
-    m_streamSessionId = streamSessionId;
-}
-
-boost::asio::awaitable<void> Stream::closeSession()
-{
-    co_await disconnect();
 }
 
 boost::asio::awaitable<boost::json::object> Stream::listen()

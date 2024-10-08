@@ -19,7 +19,7 @@ namespace xapi
  * The Stream class provides a high-level interface for streaming real-time data
  * from xAPI.
  */
-class Stream final : protected internals::Connection
+class Stream : protected internals::Connection
 {
   public:
     Stream() = delete;
@@ -34,25 +34,8 @@ class Stream final : protected internals::Connection
      * @brief Constructs a new Stream object.
      * @param ioContext The IO context for asynchronous operations.
      */
-    explicit Stream(boost::asio::io_context &ioContext);
+    explicit Stream(boost::asio::io_context &ioContext, const std::string& streamSessionId);
     ~Stream() override = default;
-
-    /**
-     * @brief Initializes a streaming session with the specified account type and stream session ID.
-     * @param accountType The type of account to initialize the session for.
-     * Possible values are:
-     *     - "demo" for a demo account,
-     *     - "real" for a real money account.
-     * @param streamSessionId The stream session ID returned by Socket login call.
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> initSession(const std::string &accountType, const std::string &streamSessionId);
-
-    /**
-     * @brief Closes the current streaming session.
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> closeSession();
 
     /**
      * @brief Starts listening for streaming data.
@@ -99,7 +82,7 @@ class Stream final : protected internals::Connection
 
   private:
     // The stream session ID.
-    std::string m_streamSessionId;
+    const std::string m_streamSessionId;
 };
 
 } // namespace xapi

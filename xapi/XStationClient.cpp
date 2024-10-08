@@ -6,7 +6,7 @@ namespace xapi
 
 XStationClient::XStationClient(boost::asio::io_context &ioContext, const std::string &accountId,
                                const std::string &password, const std::string &accountType)
-    : socket(nullptr), stream(nullptr), m_ioContext(ioContext), m_accountId(accountId), m_password(password),
+    : Socket(ioContext), m_ioContext(ioContext), m_accountId(accountId), m_password(password),
       m_accountType(accountType), m_streamSessionId("")
 {
 }
@@ -19,38 +19,41 @@ XStationClient::XStationClient(boost::asio::io_context &ioContext, const boost::
 {
 }
 
-boost::asio::awaitable<void> XStationClient::setupSocketConnection()
-{
-    socket = std::make_unique<xapi::Socket>(m_ioContext);
-    m_streamSessionId = co_await socket->login(m_accountId, m_password, m_accountType);
+boost::asio::awaitable<void> XStationClient::login() {
+    const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", m_accountType);
+    co_await connect(socketUrl);
+
+    boost::json::object command = {
+        {"command", "login"},
+        {"arguments", {
+            {"userId", m_accountId},
+            {"password", m_password}
+        }}
+    };
+    auto result = co_await request(command);
+    if (result["status"].as_bool() != true)
+    {
+        throw exception::LoginFailed(boost::json::serialize(result));
+    }
+
+    m_streamSessionId = result["streamSessionId"].as_string();
 }
 
-boost::asio::awaitable<void> XStationClient::setupStreamConnection()
-{
-    if (m_streamSessionId.empty())
+boost::asio::awaitable<void> XStationClient::logout() {
+    boost::json::object command = {
+        {"command", "logout"}
+    };
+    auto result = co_await request(command);
+    if (result["status"].as_bool() != true)
     {
-        throw exception::LoginFailed("No stream session ID, get Socket to establish a session first");
+        // If logout fails and server is not closed the connection gracefully, close it from client side.
+        co_await disconnect();
     }
-    stream = std::make_unique<xapi::Stream>(m_ioContext);
-    co_await stream->initSession(m_accountType, m_streamSessionId);
 }
 
-boost::asio::awaitable<void> XStationClient::closeSocketConnection()
-{
-    if (socket == nullptr)
-    {
-        co_return;
-    }
-    co_await socket->logout();
-}
-
-boost::asio::awaitable<void> XStationClient::closeStreamConnection()
-{
-    if (stream == nullptr)
-    {
-        co_return;
-    }
-    co_await stream->closeSession();
+XClientStream XStationClient::getClientStream() {
+    XClientStream stream(m_ioContext, m_accountType, m_streamSessionId);
+    return stream;
 }
 
 } // namespace xapi

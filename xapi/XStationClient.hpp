@@ -9,7 +9,7 @@
  */
 
 #include "Socket.hpp"
-#include "Stream.hpp"
+#include "XClientStream.hpp"
 
 namespace xapi
 {
@@ -19,7 +19,7 @@ namespace xapi
  * The XStationClient class provides a high-level interface for managing xStation client and retreiving xapi::Socket and
  * xapi::Stream objects that can be used to interact with xAPI.
  */
-class XStationClient
+class XStationClient final : public Socket
 {
   public:
     XStationClient() = delete;
@@ -59,36 +59,12 @@ class XStationClient
 
     ~XStationClient() = default;
 
-    /**
-     * @brief Performes setup of the socket connection.
-     * @return An awaitable std::shared_ptr<xapi::Socket> object.
-     */
-    boost::asio::awaitable<void> setupSocketConnection();
 
-    /**
-     * @brief Performes setup of the stream connection.
-     * @return An awaitable std::shared_ptr<xapi::Stream> object.
-     */
-    boost::asio::awaitable<void> setupStreamConnection();
+    boost::asio::awaitable<void> login();
 
-    /**
-     * @brief Closes the socket connection.
-     * 
-     * Tries to logout from the server and close the connection gracefully. If the server responds with negative status, the connection
-     * is closed from the client side.
-     * 
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> closeSocketConnection();
+    boost::asio::awaitable<void> logout();
 
-    /**
-     * @brief Closes the stream connection.
-     * @return An awaitable void.
-     */
-    boost::asio::awaitable<void> closeStreamConnection();
-
-    std::unique_ptr<xapi::Socket> socket;
-    std::unique_ptr<xapi::Stream> stream;
+    XClientStream getClientStream();
 
   private:
     boost::asio::io_context &m_ioContext;

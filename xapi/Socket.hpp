@@ -21,7 +21,7 @@ namespace xapi
  * from xAPI. It is built on top of the Connection class, which handles the
  * low-level details of establishing and maintaining a connection.
  */
-class Socket final : protected internals::Connection
+class Socket : protected internals::Connection
 {
   public:
     Socket() = delete;
@@ -39,32 +39,7 @@ class Socket final : protected internals::Connection
     explicit Socket(boost::asio::io_context &ioContext);
     ~Socket() override = default;
 
-    /**
-     * Flag to indicate if the socket operates in safe mode. Safe mode means that you can not send any trade commands.
-     * Only read-only commands are allowed.
-     */
-    bool safeMode;
-
-    /**
-     * @brief Logs in to the server with the specified account ID and password.
-     * @param accountId The account ID to log in with.
-     * @param password The password for the account.
-     * @param accountType The type of account to initialize the session for.
-     * Possible values are:
-     * 
-     *     - "demo" for a demo account,
-     * 
-     *     - "real" for a real money account.
-     * 
-     * @return An awaitable string containing the stream session ID.
-     */
-    boost::asio::awaitable<std::string> login(const std::string &accountId, const std::string &password, const std::string &accountType);
-
-    /**
-     * @brief Logs out of the server. If the logout fails, the connection is closed from the client side.
-     * @return An awaitable boost::json::object containing the logout status.
-     */
-    boost::asio::awaitable<void> logout();
+    void setSafeMode(bool safeMode);
 
     // Other methods omitted for brevity.
     // Description of the omitted methods: http://developers.xstore.pro/documentation/2.5.0#retrieving-trading-data
@@ -121,13 +96,19 @@ class Socket final : protected internals::Connection
 
     boost::asio::awaitable<boost::json::object> tradeTransactionStatus(int order);
 
-  private:
+  protected:
     /**
      * @brief Sends a request to the server and waits for response.
      * @param command The command to send as a boost::json::object.
      * @return An awaitable boost::json::object with the response from the server.
      */
     boost::asio::awaitable<boost::json::object> request(const boost::json::object &command);
+
+    /**
+     * Flag to indicate if the socket operates in safe mode. Safe mode means that you can not send any trade commands.
+     * Only read-only commands are allowed.
+     */
+    bool m_safeMode;
 };
 
 } // namespace xapi
