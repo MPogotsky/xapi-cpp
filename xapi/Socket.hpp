@@ -50,23 +50,23 @@ class Socket : protected internals::Connection
 
     boost::asio::awaitable<boost::json::object> getCalendar();
 
-    boost::asio::awaitable<boost::json::object> getChartLastRequest(const std::string &symbol, const int start,
+    boost::asio::awaitable<boost::json::object> getChartLastRequest(const std::string &symbol, const std::int64_t start,
                                                             PeriodCode period);
 
-    boost::asio::awaitable<boost::json::object> getChartRangeRequest(const std::string &symbol, int start, int end,
+    boost::asio::awaitable<boost::json::object> getChartRangeRequest(const std::string &symbol, std::int64_t start, std::int64_t end,
                                                              PeriodCode period, int ticks);
 
     boost::asio::awaitable<boost::json::object> getCommissionDef(const std::string &symbol, float volme);
 
     boost::asio::awaitable<boost::json::object> getCurrentUserData();
 
-    boost::asio::awaitable<boost::json::object> getIbsHistory(int start, int end);
+    boost::asio::awaitable<boost::json::object> getIbsHistory(std::int64_t start, std::int64_t end);
 
     boost::asio::awaitable<boost::json::object> getMarginLevel();
 
     boost::asio::awaitable<boost::json::object> getMarginTrade(const std::string &symbol, float volume);
 
-    boost::asio::awaitable<boost::json::object> getNews(int start, int end);
+    boost::asio::awaitable<boost::json::object> getNews(std::int64_t start, std::int64_t end);
 
     boost::asio::awaitable<boost::json::object> getProfitCalculation(const std::string &symbol, int cmd, float openPrice,
                                                              float closePrice, float volume);
@@ -77,14 +77,14 @@ class Socket : protected internals::Connection
 
     boost::asio::awaitable<boost::json::object> getSymbol(const std::string &symbol);
 
-    boost::asio::awaitable<boost::json::object> getTickPrices(const std::vector<std::string> &symbols, int timestamp,
+    boost::asio::awaitable<boost::json::object> getTickPrices(const std::vector<std::string> &symbols, std::int64_t timestamp,
                                                       int level);
 
     boost::asio::awaitable<boost::json::object> getTradeRecords(const std::vector<int> &orders);
 
     boost::asio::awaitable<boost::json::object> getTrades(bool openedOnly);
 
-    boost::asio::awaitable<boost::json::object> getTradesHistory(int start, int end);
+    boost::asio::awaitable<boost::json::object> getTradesHistory(std::int64_t start, std::int64_t end);
 
     boost::asio::awaitable<boost::json::object> getTradingHours(const std::vector<std::string> &symbols);
 
@@ -94,7 +94,7 @@ class Socket : protected internals::Connection
 
     boost::asio::awaitable<boost::json::object> tradeTransaction(const std::string &symbol, TradeCmd cmd, TradeType type,
                                                          float price, float volume, float sl, float tp, int order,
-                                                         int expiration, int offset, const std::string &customComment);
+                                                         std::int64_t expiration, int offset, const std::string &customComment);
 
     boost::asio::awaitable<boost::json::object> tradeTransactionStatus(int order);
 

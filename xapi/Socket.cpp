@@ -32,7 +32,7 @@ boost::asio::awaitable<boost::json::object> Socket::getCalendar()
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getChartLastRequest(const std::string &symbol, const int start,
+boost::asio::awaitable<boost::json::object> Socket::getChartLastRequest(const std::string &symbol, const std::int64_t start,
                                                                 PeriodCode period)
 {
     boost::json::object command = {
@@ -49,7 +49,7 @@ boost::asio::awaitable<boost::json::object> Socket::getChartLastRequest(const st
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getChartRangeRequest(const std::string &symbol, int start, int end,
+boost::asio::awaitable<boost::json::object> Socket::getChartRangeRequest(const std::string &symbol, std::int64_t start, std::int64_t end,
                                                                  PeriodCode period, int ticks)
 {
     boost::json::object command = {
@@ -90,7 +90,7 @@ boost::asio::awaitable<boost::json::object> Socket::getCurrentUserData()
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getIbsHistory(int start, int end)
+boost::asio::awaitable<boost::json::object> Socket::getIbsHistory(std::int64_t start, std::int64_t end)
 {
     boost::json::object command = {
         {"command", "getIbsHistory"},
@@ -125,7 +125,7 @@ boost::asio::awaitable<boost::json::object> Socket::getMarginTrade(const std::st
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getNews(int start, int end)
+boost::asio::awaitable<boost::json::object> Socket::getNews(std::int64_t start, std::int64_t end)
 {
     boost::json::object command = {
         {"command", "getNews"},
@@ -185,7 +185,7 @@ boost::asio::awaitable<boost::json::object> Socket::getSymbol(const std::string 
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getTickPrices(const std::vector<std::string> &symbols, int timestamp,
+boost::asio::awaitable<boost::json::object> Socket::getTickPrices(const std::vector<std::string> &symbols, std::int64_t timestamp,
                                                           int level)
 {
     boost::json::object command = {
@@ -224,7 +224,7 @@ boost::asio::awaitable<boost::json::object> Socket::getTrades(bool openedOnly)
     co_return result;
 }
 
-boost::asio::awaitable<boost::json::object> Socket::getTradesHistory(int start, int end)
+boost::asio::awaitable<boost::json::object> Socket::getTradesHistory(std::int64_t start, std::int64_t end)
 {
     boost::json::object command = {
         {"command", "getTradesHistory"},
@@ -269,7 +269,7 @@ boost::asio::awaitable<boost::json::object> Socket::ping()
 
 boost::asio::awaitable<boost::json::object> Socket::tradeTransaction(const std::string &symbol, TradeCmd cmd, TradeType type,
                                                              float price, float volume, float sl, float tp, int order,
-                                                             int expiration, int offset,
+                                                             std::int64_t expiration, int offset,
                                                              const std::string &customComment)
 {
     if (m_safeMode) {
