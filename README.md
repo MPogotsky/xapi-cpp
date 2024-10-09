@@ -6,14 +6,14 @@
 
 The xStation5 API C++ library provides a simple and easy-to-use API for interacting with the xStation5 trading platform. With this library, you can connect to the xStation5 platform, retrieve market data, and execute trades.
 
-This library may be used for [XTB](https://www.xtb.com) xStation5 accounts.
+This library provides interface to work with [XTB](https://www.xtb.com) xStation5 accounts.
 
 API documentation: <http://developers.xstore.pro/documentation>
 
-## Disclaimer
+### Disclaimer
+This xStation5 API C++ library is not affiliated with, endorsed by, or in any way officially connected to the xStation5 trading platform or its parent company. 
 
-This xStation5 API C++ library is not affiliated with, endorsed by, or in any way officially connected to the xStation5 trading platform or its parent company. The library is provided as-is and is not guaranteed to be suitable for any particular purpose. The use of this library is at your own risk, and the author(s) of this library will not be liable for any damages arising from the use or misuse of this library. Please refer to the license file for more information.
-
+Please refer to the [license](LICENSE) file (MIT License) for terms and conditions governing the use of this library, including disclaimers of warranties and liabilities.
 
 ## Requirements
 
@@ -24,48 +24,6 @@ Make sure to list all necessary dependencies and tools required to build and ins
 - **Boost**: Version 1.83.0 or higher
 - **OpenSSL**: Version 3.0.2 or higher
 
-If you have the required dependencies installed, you can skip the next section and navigate straight to [Build & Install](#build--install).
-
-### Installing Dependencies
-
-To install the necessary dependencies, follow these steps:
-
-1. Update the package list:
-
-```bash
-sudo apt update
-```
-
-2. Install the required packages:
-
-```bash
-sudo apt install libssl-dev libgtest-dev libboost-system1.83-dev libboost-url1.83-dev libboost-json1.83-dev
-```
-
-These commands will update the package list and install the necessary packages for building and installing the library.
-
-#### for Ubuntu 22.04
-
-Boost 1.83.0 package is not available by default on Ubuntu 22.04.
-You can install using PPA. Follow these steps:
-
-1. Run the following command to add the PPA repository:
-
-    ```bash
-    sudo add-apt-repository ppa:mhier/libboost-latest
-    ```
-
-2. Update the package list:
-
-    ```bash
-    sudo apt update
-    ```
-
-3. Install the required packages:
-
-    ```bash
-    sudo apt install libssl-dev libgtest-dev libboost-system1.83-dev libboost-url1.83-dev libboost-json1.83-dev
-    ```
 
 ### Build & Install
 Step-by-step guide to build the project using CMake.
@@ -102,7 +60,84 @@ To use xAPI, an active account on the xStation5 trading platform is required. It
 
 Once your account is set up, you can leverage the Xapi library to connect to the platform and start trading.
 
-For a detailed overview and practical usage of the library, refer to the [**Examples README**](examples/README.md). It contains step-by-step guides and illustrative examples to help you understand how to effectively use the library.
+### Cmake configuration
+
+Xapi supports ``find_package``, simplifying the process of linking the library to your project. A typical `CMakeLists.txt` for your project might look like this:
+
+```cmake
+    cmake_minimum_required(VERSION 3.10)
+    project(ExampleApp)
+
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    find_package(Xapi REQUIRED)
+
+    add_executable(ExampleApp main.cpp)
+
+    target_link_libraries(ExampleApp
+        PRIVATE
+        Boost::system
+        Boost::json
+        Xapi::Xapi
+    )
+```
+
+### Example getAllSymbols
+Here’s a simple example of how to use the library in your ``main.cpp``:
+```cpp
+#include <iostream>
+#include <string>
+#include <boost/asio.hpp>
+#include <boost/json.hpp>
+#include <xapi/Xapi.hpp>
+
+
+boost::asio::awaitable<void> run(boost::asio::io_context &context)
+{
+    const boost::json::object accountCredentials = {
+        {"accountId", "accountId"}, // Replace value with your account ID
+        {"password", "password"}, // Replace valuer with your password
+        {"accountType", "demo"} // Account type, "demo" or "real"
+    };
+
+    xapi::XStationClient user(context, accountCredentials);
+
+    try
+    {
+        co_await user.login();
+
+        auto result = co_await user.getAllSymbols();
+        std::cout << boost::json::serialize(result) << std::endl;
+
+        co_await user.logout();
+    }
+    catch (xapi::exception::ConnectionClosed &e)
+    {
+        std::cout << "Connection failed: " << e.what() << std::endl;
+    }
+    catch (xapi::exception::LoginFailed &e)
+    {
+        std::cout << "Logging failed: " << e.what() << std::endl;
+    }
+    catch (std::exception &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    boost::asio::io_context context;
+
+    boost::asio::co_spawn(context, run(context), boost::asio::detached);
+
+    context.run();
+    return 0;
+}
+```
+
+More examples can be found in [examples](examples/) folder.
 
 ## Runing Tests
 To build the tests, follow these steps:
@@ -122,3 +157,17 @@ To build the tests, follow these steps:
     ```bash
     test/tests
     ```
+
+## Getting Help
+
+If you have questions, issues, or need assistance with this project, you can:
+
+- Check the [GitHub Issues](https://github.com/MPogotsky/xapi-cpp/issues) page to report problems or check for known issues.
+- Review the [Wiki](https://github.com/MPogotsky/xapi-cpp/wiki) for more detailed documentation and FAQs.
+
+Feel free to reach out via email at matsvei.pahotski@gmail.com if you need direct assistance.
+
+
+## Contributing
+
+To contribute, please fork the repository, make your changes, and submit a pull request. All contributions are reviewed, and any useful additions are welcome!
