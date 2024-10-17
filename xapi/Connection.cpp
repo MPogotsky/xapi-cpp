@@ -8,8 +8,18 @@ namespace internals
 
 Connection::Connection(boost::asio::io_context &ioContext)
     : m_ioContext(ioContext), m_sslContext(boost::asio::ssl::context::tlsv13_client),
-      m_websocket(m_ioContext, m_sslContext), m_lastRequestTime(std::chrono::system_clock::now()),
-      m_connectionEstablished(false), m_requestTimeout(200), m_websocketDefaultPort("443")
+      m_websocket(m_ioContext, m_sslContext), m_cancellationSignal(),
+      m_lastRequestTime(std::chrono::system_clock::now()), m_requestTimeout(200), m_websocketDefaultPort("443")
+{
+}
+
+Connection::Connection(Connection &&other) noexcept
+    : m_ioContext(other.m_ioContext),
+      m_sslContext(std::move(other.m_sslContext)),
+      m_websocket(std::move(other.m_websocket)),
+      m_lastRequestTime(std::move(other.m_lastRequestTime)),
+      m_requestTimeout(other.m_requestTimeout),
+      m_websocketDefaultPort(std::move(other.m_websocketDefaultPort))
 {
 }
 
@@ -24,8 +34,13 @@ boost::asio::awaitable<void> Connection::connect(const boost::url &url)
 
         co_await establishSSLConnection(results, url.host().c_str());
 
+        m_websocket.set_option(
+            boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
+
         co_await m_websocket.async_handshake(url.host(), url.path(), boost::asio::use_awaitable);
-        m_connectionEstablished = true;
+
+        // Start sending periodic ping messages to keep the connection alive
+        boost::asio::co_spawn(executor, startKeepAlive(m_cancellationSignal.slot()), boost::asio::detached);
     }
     catch (const boost::system::system_error &e)
     {
@@ -49,7 +64,6 @@ boost::asio::awaitable<void> Connection::establishSSLConnection(
             throw boost::beast::system_error{ec};
         }
         co_await sslStream.async_handshake(boost::asio::ssl::stream_base::client, boost::asio::use_awaitable);
-
         tcpStream.expires_never();
     }
     catch (const boost::system::system_error &e)
@@ -60,10 +74,21 @@ boost::asio::awaitable<void> Connection::establishSSLConnection(
 
 boost::asio::awaitable<void> Connection::disconnect()
 {
-    if (m_connectionEstablished)
+    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
+    // Cancel all pending asynchronous operations
+    m_websocket.next_layer().next_layer().cancel();
+
+    try
     {
         co_await m_websocket.async_close(boost::beast::websocket::close_code::normal, boost::asio::use_awaitable);
-        m_connectionEstablished = false;
+    }
+    catch (const boost::system::system_error &e)
+    {
+        if (e.code() == boost::asio::error::operation_aborted || e.code() == boost::asio::error::eof)
+        {
+            // operation_aborted or eof is expected when the connection is closed by remote peer
+            co_return;
+        }
     }
 };
 
@@ -103,7 +128,50 @@ boost::asio::awaitable<boost::json::object> Connection::waitResponse()
     }
     catch (const boost::system::system_error &e)
     {
-        throw exception::ConnectionClosed(e.what());
+        if (e.code() == boost::asio::error::eof)
+        {
+            throw exception::ConnectionClosed("Connection closed by remote host");
+        }
+        else
+        {
+            throw exception::ConnectionClosed(e.what());
+        }
+    }
+}
+
+boost::asio::awaitable<void> Connection::startKeepAlive(boost::asio::cancellation_slot cancellationSlot)
+{
+    const auto executor = co_await boost::asio::this_coro::executor;
+    boost::asio::steady_timer pingTimer(executor);
+    const auto pingInterval = std::chrono::seconds(20);
+
+    cancellationSlot.assign([&]([[maybe_unused]] boost::asio::cancellation_type type) {
+        if (type == boost::asio::cancellation_type::all)
+        {
+            pingTimer.cancel();
+        }
+    });
+
+    while (true)
+    {
+        try
+        {
+            pingTimer.expires_after(pingInterval);
+            co_await pingTimer.async_wait(boost::asio::use_awaitable);
+
+            if (m_websocket.is_open())
+            {
+                co_await m_websocket.async_ping({}, boost::asio::use_awaitable);
+            }
+            else
+            {
+                break;
+            }
+        }
+        catch (const boost::system::system_error &e)
+        {
+            throw exception::ConnectionClosed(e.what());
+        }
     }
 }
 

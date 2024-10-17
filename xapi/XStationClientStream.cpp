@@ -1,22 +1,31 @@
-#include "Stream.hpp"
+#include "XStationClientStream.hpp"
 #include "Exceptions.hpp"
 
 namespace xapi
 {
-namespace internals
-{
 
-Stream::Stream(boost::asio::io_context &ioContext, const std::string& streamSessionId ) : Connection(ioContext), m_streamSessionId(streamSessionId)
+XStationClientStream::XStationClientStream(boost::asio::io_context &ioContext, const std::string &accountType, const std::string& streamSessionId) 
+: Connection(ioContext), m_streamUrl(boost::urls::format("wss://ws.xtb.com/{}Stream", accountType)), m_streamSessionId(streamSessionId)
 {
 }
 
-boost::asio::awaitable<boost::json::object> Stream::listen()
+boost::asio::awaitable<void> XStationClientStream::open()
+{
+    co_await connect(m_streamUrl);
+}
+
+boost::asio::awaitable<void> XStationClientStream::close()
+{
+    co_await disconnect();
+}
+
+boost::asio::awaitable<boost::json::object> XStationClientStream::listen()
 {
     auto result = co_await waitResponse();
     co_return result;
 }
 
-boost::asio::awaitable<void> Stream::getBalance()
+boost::asio::awaitable<void> XStationClientStream::getBalance()
 {
     boost::json::object command = {
         {"command", "getBalance"},
@@ -25,7 +34,7 @@ boost::asio::awaitable<void> Stream::getBalance()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopBalance()
+boost::asio::awaitable<void> XStationClientStream::stopBalance()
 {
     boost::json::object command = {
         {"command", "stopBalance"}
@@ -33,7 +42,7 @@ boost::asio::awaitable<void> Stream::stopBalance()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getCandles(const std::string &symbol)
+boost::asio::awaitable<void> XStationClientStream::getCandles(const std::string &symbol)
 {
     boost::json::object command = {
         {"command", "getCandles"},
@@ -43,7 +52,7 @@ boost::asio::awaitable<void> Stream::getCandles(const std::string &symbol)
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopCandles(const std::string &symbol)
+boost::asio::awaitable<void> XStationClientStream::stopCandles(const std::string &symbol)
 {
     boost::json::object command = {
         {"command", "stopCandles"},
@@ -52,7 +61,7 @@ boost::asio::awaitable<void> Stream::stopCandles(const std::string &symbol)
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getKeepAlive()
+boost::asio::awaitable<void> XStationClientStream::getKeepAlive()
 {
     boost::json::object command = {
         {"command", "getKeepAlive"},
@@ -61,7 +70,7 @@ boost::asio::awaitable<void> Stream::getKeepAlive()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopKeepAlive()
+boost::asio::awaitable<void> XStationClientStream::stopKeepAlive()
 {
     boost::json::object command = {
         {"command", "stopKeepAlive"}
@@ -69,7 +78,7 @@ boost::asio::awaitable<void> Stream::stopKeepAlive()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getNews()
+boost::asio::awaitable<void> XStationClientStream::getNews()
 {
     boost::json::object command = {
         {"command", "getNews"},
@@ -78,7 +87,7 @@ boost::asio::awaitable<void> Stream::getNews()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopNews()
+boost::asio::awaitable<void> XStationClientStream::stopNews()
 {
     boost::json::object command = {
         {"command", "stopNews"}
@@ -86,7 +95,7 @@ boost::asio::awaitable<void> Stream::stopNews()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getProfits()
+boost::asio::awaitable<void> XStationClientStream::getProfits()
 {
     boost::json::object command = {
         {"command", "getProfits"},
@@ -95,7 +104,7 @@ boost::asio::awaitable<void> Stream::getProfits()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopProfits()
+boost::asio::awaitable<void> XStationClientStream::stopProfits()
 {
     boost::json::object command = {
         {"command", "stopProfits"}
@@ -103,7 +112,7 @@ boost::asio::awaitable<void> Stream::stopProfits()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getTickPrices(const std::string &symbol, int minArrivalTime, int maxLevel)
+boost::asio::awaitable<void> XStationClientStream::getTickPrices(const std::string &symbol, int minArrivalTime, int maxLevel)
 {
     boost::json::object command = {
         {"command", "getTickPrices"},
@@ -115,7 +124,7 @@ boost::asio::awaitable<void> Stream::getTickPrices(const std::string &symbol, in
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopTickPrices(const std::string &symbol)
+boost::asio::awaitable<void> XStationClientStream::stopTickPrices(const std::string &symbol)
 {
     boost::json::object command = {
         {"command", "stopTickPrices"},
@@ -124,7 +133,7 @@ boost::asio::awaitable<void> Stream::stopTickPrices(const std::string &symbol)
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getTrades()
+boost::asio::awaitable<void> XStationClientStream::getTrades()
 {
     boost::json::object command = {
         {"command", "getTrades"},
@@ -133,7 +142,7 @@ boost::asio::awaitable<void> Stream::getTrades()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopTrades()
+boost::asio::awaitable<void> XStationClientStream::stopTrades()
 {
     boost::json::object command = {
         {"command", "stopTrades"}
@@ -141,7 +150,7 @@ boost::asio::awaitable<void> Stream::stopTrades()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::getTradeStatus()
+boost::asio::awaitable<void> XStationClientStream::getTradeStatus()
 {
     boost::json::object command = {
         {"command", "getTradeStatus"},
@@ -150,7 +159,7 @@ boost::asio::awaitable<void> Stream::getTradeStatus()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::stopTradeStatus()
+boost::asio::awaitable<void> XStationClientStream::stopTradeStatus()
 {
     boost::json::object command = {
         {"command", "stopTradeStatus"}
@@ -158,7 +167,7 @@ boost::asio::awaitable<void> Stream::stopTradeStatus()
     co_await makeRequest(command);
 }
 
-boost::asio::awaitable<void> Stream::ping()
+boost::asio::awaitable<void> XStationClientStream::ping()
 {
     boost::json::object command = {
         {"command", "ping"},
@@ -167,5 +176,4 @@ boost::asio::awaitable<void> Stream::ping()
     co_await makeRequest(command);
 }
 
-} // namespace internals
 } // namespace xapi

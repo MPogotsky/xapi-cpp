@@ -3,9 +3,8 @@ enable_testing()
 
 set( SOURCES 
     TestConnection.cpp
-    TestSocket.cpp
-    TestStream.cpp
     TestXStationClient.cpp
+    TestXStationClientStream.cpp
 )
 
 add_executable( tests

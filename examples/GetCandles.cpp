@@ -6,7 +6,7 @@
 #include <boost/json.hpp>
 #include <xapi/Xapi.hpp>
 
-boost::asio::awaitable<void> printCandles(xapi::XClientStream &stream)
+boost::asio::awaitable<void> printCandles(xapi::XStationClientStream &stream)
 {
     co_await stream.getCandles("US100");
     // Use getKeepAlive, to keep the connection alive

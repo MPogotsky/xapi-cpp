@@ -5,7 +5,7 @@
 #include <boost/json.hpp>
 #include <xapi/Xapi.hpp>
 
-boost::asio::awaitable<void> printBalance(xapi::XClientStream &stream)
+boost::asio::awaitable<void> printBalance(xapi::XStationClientStream &stream)
 {
     co_await stream.getBalance();
     // Use getKeepAlive, to keep the connection alive
@@ -20,8 +20,8 @@ boost::asio::awaitable<void> printBalance(xapi::XClientStream &stream)
         counter += 1;
     }
 
-    co_await stream.stopBalance();
     co_await stream.stopKeepAlive();
+    co_await stream.stopBalance();
 
     co_return;
 }

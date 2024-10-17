@@ -9,6 +9,7 @@
  */
 
 #include <boost/asio.hpp>
+#include <boost/asio/cancellation_signal.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/websocket/ssl.hpp>
 #include <boost/json.hpp>
@@ -36,7 +37,7 @@ class Connection
     Connection(const Connection &) = delete;
     Connection &operator=(const Connection &) = delete;
 
-    Connection(Connection &&other) = default;
+    Connection(Connection &&other) noexcept;
     // Move assignment operator is not supported because of boost::beast::websocket::stream
     Connection &operator=(Connection &&other) = delete;
 
@@ -77,6 +78,10 @@ class Connection
      */
     boost::asio::awaitable<boost::json::object> waitResponse();
 
+  protected:
+    // The IO context for asynchronous operations.
+    boost::asio::io_context &m_ioContext;
+
   private:
     /**
      * @brief Establishes an SSL connection asynchronously.
@@ -88,8 +93,13 @@ class Connection
     boost::asio::awaitable<void> establishSSLConnection(const boost::asio::ip::tcp::resolver::results_type &results,
                                                         const char *host);
 
-    // The IO context for asynchronous operations.
-    boost::asio::io_context &m_ioContext;
+    /**
+     * @brief Starts the keep-alive coroutine.
+     * @param cancellationSlot The cancellation slot for stopping the coroutine.
+     * @return An awaitable void.
+     * @throw xapi::exception::ConnectionClosed if the ping fails.
+     */
+    boost::asio::awaitable<void> startKeepAlive(boost::asio::cancellation_slot cancellationSlot);
 
     // SSL context, stores certificates.
     boost::asio::ssl::context m_sslContext;
@@ -97,11 +107,11 @@ class Connection
     // The WebSocket stream.
     boost::beast::websocket::stream<boost::asio::ssl::stream<boost::beast::tcp_stream>> m_websocket;
 
+    // Cancellation signal for stopping keepAlive coroutine
+    boost::asio::cancellation_signal m_cancellationSignal;
+
     // Time of the last request.
     std::chrono::time_point<std::chrono::system_clock> m_lastRequestTime;
-
-    // Flag indicating if the connection is established.
-    bool m_connectionEstablished;
 
     // Timeout for requests.
     const std::chrono::milliseconds m_requestTimeout;

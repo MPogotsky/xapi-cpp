@@ -1,10 +1,10 @@
 #pragma once
 
 /**
- * @file Stream.hpp
- * @brief Defines the Stream class for managing streaming commands.
+ * @file XStationClientStream.hpp
+ * @brief Defines the XStationClientStream class for managing streaming commands.
  *
- * This file contains the definition of the Stream class, which encapsulates
+ * This file contains the definition of the XStationClientStream class, which encapsulates
  * streaming operations for real-time streaming data.
  */
 
@@ -12,32 +12,44 @@
 
 namespace xapi
 {
-namespace internals
-{
 
 /**
  * @brief Encapsulates operations for streaming real-time data from xAPI.
  *
- * The Stream class provides a high-level interface for streaming real-time data
+ * The XStationClientStream class provides a high-level interface for streaming real-time data
  * from xAPI.
  */
-class Stream : protected internals::Connection
+class XStationClientStream : protected internals::Connection
 {
   public:
-    Stream() = delete;
+    XStationClientStream() = delete;
 
-    Stream(const Stream &) = delete;
-    Stream &operator=(const Stream &) = delete;
+    XStationClientStream(const XStationClientStream &) = delete;
+    XStationClientStream &operator=(const XStationClientStream &) = delete;
 
-    Stream(Stream &&other) = default;
-    Stream &operator=(Stream &&other) = delete;
+    XStationClientStream(XStationClientStream &&other) = default;
+    XStationClientStream &operator=(XStationClientStream &&other) = delete;
 
     /**
-     * @brief Constructs a new Stream object.
+     * @brief Constructs a new XStationClientStream object.
      * @param ioContext The IO context for asynchronous operations.
      */
-    explicit Stream(boost::asio::io_context &ioContext, const std::string& streamSessionId);
-    ~Stream() override = default;
+    explicit XStationClientStream(boost::asio::io_context &ioContext, const std::string &accountType, const std::string& streamSessionId);
+    ~XStationClientStream() override = default;
+
+    /**
+     * @brief Opens a connection to the streaming server.
+     * @return An awaitable void.
+     * @throw xapi::exception::ConnectionClosed if the connection fails.
+     */
+    boost::asio::awaitable<void> open();
+
+    /**
+     * @brief Closes the connection to the streaming server.
+     * @return An awaitable void.
+     * @throw xapi::exception::ConnectionClosed if closing the connection fails unexpectedly.
+     */
+    boost::asio::awaitable<void> close();
 
     /**
      * @brief Starts listening for streaming data.
@@ -84,8 +96,8 @@ class Stream : protected internals::Connection
 
   private:
     // The stream session ID.
+    const boost::url m_streamUrl;
     const std::string m_streamSessionId;
 };
 
-} // namespace internals
 } // namespace xapi

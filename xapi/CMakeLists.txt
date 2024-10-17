@@ -2,20 +2,16 @@ set(XAPI_PUBLIC_H
     Enums.hpp
     Exceptions.hpp
     Connection.hpp
-    Socket.hpp
-    Stream.hpp
     XStationClient.hpp
-    XClientStream.hpp
+    XStationClientStream.hpp
     Xapi.hpp
 )
 
 set(XAPI_SOURCES
     ${XAPI_PUBLIC_H}
     Connection.cpp
-    Socket.cpp
-    Stream.cpp
     XStationClient.cpp
-    XClientStream.cpp
+    XStationClientStream.cpp
 )
 
 add_library(Xapi SHARED ${XAPI_SOURCES})
