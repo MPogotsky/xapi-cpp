@@ -160,14 +160,11 @@ To build the tests, follow these steps:
 
 ## Getting Help
 
-If you have questions, issues, or need assistance with this project, you can:
-
-- Check the [GitHub Issues](https://github.com/MPogotsky/xapi-cpp/issues) page to report problems or check for known issues.
-- Review the [Wiki](https://github.com/MPogotsky/xapi-cpp/wiki) for more detailed documentation and FAQs.
+If you have questions, issues, or need assistance with this project, you can visit the [GitHub Issues](https://github.com/MPogotsky/xapi-cpp/issues) page to report problems or check for known issues.
 
 Feel free to reach out via email at matsvei.pahotski@gmail.com if you need direct assistance.
 
 
 ## Contributing
 
-To contribute, please fork the repository, make your changes, and submit a pull request. All contributions are reviewed, and any useful additions are welcome!
+To contribute, please fork the repository, make your changes, and submit a pull request. All contributions will be reviewed, and any useful additions are welcome. Any review or improvement suggestions you may have are greatly appreciated
