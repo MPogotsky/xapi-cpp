@@ -77,6 +77,7 @@ Xapi supports ``find_package``, simplifying the process of linking the library t
         PRIVATE
         Boost::system
         Boost::json
+        Boost::url
         Xapi::Xapi
     )
 ```
