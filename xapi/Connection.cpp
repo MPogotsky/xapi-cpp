@@ -98,7 +98,9 @@ boost::asio::awaitable<void> Connection::makeRequest(const boost::json::object &
     const auto duration = currentTime - m_lastRequestTime;
     if (duration < m_requestTimeout)
     {
-        std::this_thread::sleep_for(m_requestTimeout - duration);
+        boost::asio::steady_timer timer(co_await boost::asio::this_coro::executor);
+        timer.expires_after(m_requestTimeout - duration);
+        co_await timer.async_wait(boost::asio::use_awaitable);
     }
 
     try
