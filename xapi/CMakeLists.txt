@@ -21,7 +21,7 @@ target_compile_options(Xapi PRIVATE
     -Werror
     -Wpedantic
     -Wextra
-    -O2
+    -O3
 )
 
 target_link_libraries(Xapi PRIVATE
