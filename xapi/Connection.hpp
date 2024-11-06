@@ -34,8 +34,8 @@ class Connection
   public:
     Connection() = delete;
 
-    Connection(const Connection &) = delete;
-    Connection &operator=(const Connection &) = delete;
+    Connection(const Connection &other) = delete;
+    Connection &operator=(const Connection &other) = delete;
 
     Connection(Connection &&other) noexcept;
     // Move assignment operator is not supported because of boost::beast::websocket::stream
@@ -47,7 +47,7 @@ class Connection
      */
     explicit Connection(boost::asio::io_context &ioContext);
 
-    virtual ~Connection() = default;
+    virtual ~Connection();
 
     /**
      * @brief Asynchronously establishes secure WebSocket connection to the server.
@@ -100,6 +100,12 @@ class Connection
      * @throw xapi::exception::ConnectionClosed if the ping fails.
      */
     boost::asio::awaitable<void> startKeepAlive(boost::asio::cancellation_slot cancellationSlot);
+
+    /**
+     * @brief Cancels all pending asynchronous operations and stops the keep-alive coroutine.
+     * @return void.
+     */
+    void cancelAsyncOperations() noexcept;
 
     // SSL context, stores certificates.
     boost::asio::ssl::context m_sslContext;

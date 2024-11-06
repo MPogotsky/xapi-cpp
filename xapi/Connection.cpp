@@ -23,6 +23,11 @@ Connection::Connection(Connection &&other) noexcept
 {
 }
 
+Connection::~Connection()
+{
+    cancelAsyncOperations();
+}
+
 boost::asio::awaitable<void> Connection::connect(const boost::url &url)
 {
     const auto executor = co_await boost::asio::this_coro::executor;
@@ -74,10 +79,7 @@ boost::asio::awaitable<void> Connection::establishSSLConnection(
 
 boost::asio::awaitable<void> Connection::disconnect()
 {
-    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
-    // Cancel all pending asynchronous operations
-    m_websocket.next_layer().next_layer().cancel();
-
+    cancelAsyncOperations();
     try
     {
         co_await m_websocket.async_close(boost::beast::websocket::close_code::normal, boost::asio::use_awaitable);
@@ -174,6 +176,15 @@ boost::asio::awaitable<void> Connection::startKeepAlive(boost::asio::cancellatio
         {
             throw exception::ConnectionClosed(e.what());
         }
+    }
+}
+
+void Connection::cancelAsyncOperations() noexcept
+{
+    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
+    if (m_websocket.is_open())
+    {
+        m_websocket.next_layer().next_layer().cancel();
     }
 }
 
