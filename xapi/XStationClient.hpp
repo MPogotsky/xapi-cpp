@@ -23,7 +23,7 @@ namespace xapi
  * from xAPI. It is built on top of the Connection class, which handles the
  * low-level details of establishing and maintaining a connection.
  */
-class XStationClient : protected internals::Connection
+class XStationClient final
 {
   public:
     XStationClient() = delete;
@@ -67,7 +67,7 @@ class XStationClient : protected internals::Connection
      */
     explicit XStationClient(boost::asio::io_context &ioContext, const boost::json::object &accountCredentials);
     
-    ~XStationClient() override = default;
+    ~XStationClient() = default;
 
     /**
      * @brief Opens connection to the server and logs in.
@@ -152,6 +152,9 @@ class XStationClient : protected internals::Connection
     boost::asio::awaitable<boost::json::object> tradeTransactionStatus(int order);
 
   protected:
+
+    boost::asio::io_context &m_ioContext;
+    std::unique_ptr<internals::IConnection> m_connection;
 
     const std::string m_accountId;
     const std::string m_password;

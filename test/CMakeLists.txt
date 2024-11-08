@@ -7,6 +7,7 @@ set( SOURCES
     TestXStationClientStream.cpp
 )
 
+add_subdirectory(mocks)
 add_executable( tests
     ${SOURCES}
 )
@@ -20,13 +21,16 @@ target_compile_options(tests PRIVATE
     -Wno-missing-field-initializers
 )
 
+target_include_directories(tests PRIVATE mocks)
 target_link_libraries(tests PRIVATE 
     ${GTEST_LIBRARIES}
     Boost::system
     Boost::url
     Boost::json
     Xapi
-    GTest::gtest_main
+    gtest
+    gtest_main
+    test_mocks
 )
 
 include(GoogleTest)

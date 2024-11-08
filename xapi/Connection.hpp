@@ -8,12 +8,9 @@
  * establishing and managing connections, making requests, and handling responses.
  */
 
-#include <boost/asio.hpp>
-#include <boost/asio/cancellation_signal.hpp>
+#include "IConnection.hpp"
 #include <boost/beast.hpp>
 #include <boost/beast/websocket/ssl.hpp>
-#include <boost/json.hpp>
-#include <boost/url.hpp>
 #include <chrono>
 #include <string>
 
@@ -29,7 +26,7 @@ namespace internals
  * The Connection class encapsulates the functionality for establishing an SSL connection,
  * sending requests, and receiving responses.
  */
-class Connection
+class Connection : public IConnection
 {
   public:
     Connection() = delete;
@@ -47,7 +44,7 @@ class Connection
      */
     explicit Connection(boost::asio::io_context &ioContext);
 
-    virtual ~Connection();
+    virtual ~Connection() override;
 
     /**
      * @brief Asynchronously establishes secure WebSocket connection to the server.
@@ -55,13 +52,13 @@ class Connection
      * @return An awaitable void.
      * @throw xapi::exception::ConnectionClosed if the connection fails.
      */
-    boost::asio::awaitable<void> connect(const boost::url &url);
+    boost::asio::awaitable<void> connect(const boost::url &url) override;
 
     /**
      * @brief Asynchronously disconnects from the server.
      * @return An awaitable void.
      */
-    boost::asio::awaitable<void> disconnect();
+    boost::asio::awaitable<void> disconnect() override;
 
     /**
      * @brief Makes an asynchronous request to the server.
@@ -69,20 +66,19 @@ class Connection
      * @return An awaitable void.
      * @throw xapi::exception::ConnectionClosed if the request fails.
      */
-    boost::asio::awaitable<void> makeRequest(const boost::json::object &command);
+    boost::asio::awaitable<void> makeRequest(const boost::json::object &command) override;
 
     /**
      * @brief Waits for a response from the server.
      * @return An awaitable boost::json::object with response from the server.
      * @throw xapi::exception::ConnectionClosed if the response fails.
      */
-    boost::asio::awaitable<boost::json::object> waitResponse();
+    boost::asio::awaitable<boost::json::object> waitResponse() override;
 
-  protected:
+  private:
     // The IO context for asynchronous operations.
     boost::asio::io_context &m_ioContext;
 
-  private:
     /**
      * @brief Establishes an SSL connection asynchronously.
      * @param results The resolved endpoints to attempt to connect to.

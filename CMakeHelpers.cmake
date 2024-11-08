@@ -26,10 +26,11 @@ endmacro()
 
 # Helper macro to find google test library
 macro(helper_FIND_GTEST_LIBS)
-    find_package(GTest REQUIRED)
-    if(NOT GTest_FOUND)
-        message("Gtets not found. Tests won`t compile.")
-    else()
-        include_directories(${GTEST_INCLUDE_DIRS})
-    endif()
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/refs/heads/main.zip
+    )
+    # Download and make gtest/gmock available
+    FetchContent_MakeAvailable(googletest)
 endmacro()

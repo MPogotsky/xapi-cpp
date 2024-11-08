@@ -8,7 +8,7 @@ const std::unordered_set<std::string> XStationClient::m_knownAccountTypes = {"de
 
 XStationClient::XStationClient(boost::asio::io_context &ioContext, const std::string &accountId,
                                const std::string &password, const std::string &accountType)
-    : Connection(ioContext), m_accountId(accountId), m_password(password),
+    : m_ioContext(ioContext), m_connection(std::make_unique<internals::Connection>(ioContext)), m_accountId(accountId), m_password(password),
       m_accountType(accountType), m_safeMode(true), m_streamSessionId("")
 {
 }
@@ -25,7 +25,7 @@ boost::asio::awaitable<void> XStationClient::login() {
     validateAccountType(m_accountType);
 
     const boost::url socketUrl = boost::urls::format("wss://ws.xtb.com/{}", m_accountType);
-    co_await connect(socketUrl);
+    co_await m_connection->connect(socketUrl);
 
     boost::json::object command = {
         {"command", "login"},
@@ -48,7 +48,7 @@ boost::asio::awaitable<void> XStationClient::logout() {
         {"command", "logout"}
     };
     co_await request(command);
-    co_await disconnect();
+    co_await m_connection->disconnect();
 
 }
 
@@ -366,8 +366,8 @@ boost::asio::awaitable<boost::json::object> XStationClient::tradeTransactionStat
 
 boost::asio::awaitable<boost::json::object> XStationClient::request(const boost::json::object &command)
 {
-    co_await makeRequest(command);
-    auto result = co_await waitResponse();
+    co_await m_connection->makeRequest(command);
+    auto result = co_await m_connection->waitResponse();
     co_return result;
 }
 

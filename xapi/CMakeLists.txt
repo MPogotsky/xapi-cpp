@@ -1,6 +1,7 @@
 set(XAPI_PUBLIC_H
     Enums.hpp
     Exceptions.hpp
+    IConnection.hpp
     Connection.hpp
     XStationClient.hpp
     XStationClientStream.hpp
