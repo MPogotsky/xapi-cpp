@@ -1,9 +1,6 @@
 #pragma once
 
 #include <gmock/gmock.h>
-#include <boost/asio.hpp>
-#include <boost/json.hpp>
-#include <boost/url.hpp>
 #include "xapi/IConnection.hpp"
 
 class MockConnection : public xapi::internals::IConnection

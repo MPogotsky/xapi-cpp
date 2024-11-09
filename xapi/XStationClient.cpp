@@ -35,6 +35,11 @@ boost::asio::awaitable<void> XStationClient::login() {
         }}
     };
     auto result = co_await request(command);
+
+    if (!result.contains("status") && !result.contains("streamSessionId")) {
+        throw exception::LoginFailed("Invalid response from the server");
+    }
+
     if (result["status"].as_bool() != true)
     {
         throw exception::LoginFailed(boost::json::serialize(result));

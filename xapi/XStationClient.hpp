@@ -13,6 +13,20 @@
 #include "Enums.hpp"
 #include <unordered_set>
 
+#undef TEST_FRIENDS
+#ifdef ENABLE_TEST
+#include "gtest/gtest_prod.h"
+class XStationClientTest;
+#define TEST_FRIENDS \
+    friend class XStationClientTest; \
+    FRIEND_TEST(XStationClientTest, login_ok); \
+    FRIEND_TEST(XStationClientTest, login_invalid_account_type); \
+    FRIEND_TEST(XStationClientTest, login_account_credentials_null); \
+    FRIEND_TEST(XStationClientTest, login_invalid_return_from_the_server);
+#else
+#define TEST_FRIENDS
+#endif
+
 namespace xapi
 {
 
@@ -151,7 +165,7 @@ class XStationClient final
 
     boost::asio::awaitable<boost::json::object> tradeTransactionStatus(int order);
 
-  protected:
+  private:
 
     boost::asio::io_context &m_ioContext;
     std::unique_ptr<internals::IConnection> m_connection;
@@ -183,6 +197,8 @@ class XStationClient final
      * @throw xapi::exception::ConnectionClosed if the account type is not known.
      */
     static void validateAccountType(const std::string &accountType);
+
+    TEST_FRIENDS
 };
 
 } // namespace xapi
