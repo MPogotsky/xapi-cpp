@@ -40,7 +40,7 @@ Step-by-step guide to build the project using CMake.
     cd build
     ```
 
-3. Run CMake to configure and build the project:
+3. Run CMake to configure and build Release version of the library:
 
     ```bash
     cmake ..
@@ -142,10 +142,10 @@ More examples can be found in [examples](examples/) folder.
 To build the tests, follow these steps:
 
 1. Navigate to the `build` directory.
-2. Run the following commands to configure and build the tests using CMake:
+2. Run the following commands to configure debug mode and build the tests using CMake:
 
     ```bash
-    cmake -DBUILD_TESTS=ON ..
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     cmake --build .
     ```
 
