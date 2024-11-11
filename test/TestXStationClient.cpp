@@ -1377,5 +1377,4 @@ TEST_F(XStationClientTest, tradeTransactionStatus_exception)
     EXPECT_THROW(result = runAwaitable(client->tradeTransactionStatus(order)), exception::ConnectionClosed);
 }
 
-
 } // namespace xapi

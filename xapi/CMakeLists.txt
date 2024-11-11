@@ -17,14 +17,22 @@ set(XAPI_SOURCES
 
 add_library(Xapi SHARED ${XAPI_SOURCES})
 
-target_compile_options(Xapi PRIVATE
+# TARGET SETUP OPTIONS ========================================
+set(COMMON_FLAGS
     -Wall
     -Werror
     -Wpedantic
     -Wextra
-    -O3
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    list(APPEND COMMON_FLAGS -O3)
+else()
+    list(APPEND COMMON_FLAGS -O0 -g)
+endif()
+target_compile_options(Xapi PRIVATE ${COMMON_FLAGS})
+
+# TARGET LINK OPTIONS ========================================
 target_link_libraries(Xapi PRIVATE
     Boost::system
     Boost::url

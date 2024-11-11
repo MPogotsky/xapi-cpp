@@ -1,4 +1,3 @@
-helper_FIND_GTEST_LIBS()
 enable_testing()
 
 set( SOURCES 
@@ -10,15 +9,6 @@ set( SOURCES
 add_subdirectory(mocks)
 add_executable( tests
     ${SOURCES}
-)
-
-target_compile_options(tests PRIVATE
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Werror
-    -Wno-unused-parameter
-    -Wno-missing-field-initializers
 )
 
 target_include_directories(tests PRIVATE mocks)
