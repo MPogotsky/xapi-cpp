@@ -19,7 +19,7 @@ namespace xapi
  * The XStationClientStream class provides a high-level interface for streaming real-time data
  * from xAPI.
  */
-class XStationClientStream : protected internals::Connection
+class XStationClientStream
 {
   public:
     XStationClientStream() = delete;
@@ -35,7 +35,7 @@ class XStationClientStream : protected internals::Connection
      * @param ioContext The IO context for asynchronous operations.
      */
     explicit XStationClientStream(boost::asio::io_context &ioContext, const std::string &accountType, const std::string& streamSessionId);
-    ~XStationClientStream() override = default;
+    ~XStationClientStream() = default;
 
     /**
      * @brief Opens a connection to the streaming server.
@@ -95,6 +95,8 @@ class XStationClientStream : protected internals::Connection
     boost::asio::awaitable<void> ping();
 
   private:
+    std::unique_ptr<internals::IConnection> m_connection;
+
     // The stream session ID.
     const boost::url m_streamUrl;
     const std::string m_streamSessionId;
