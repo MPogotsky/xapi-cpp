@@ -10,6 +10,16 @@
 
 #include "Connection.hpp"
 
+#undef TEST_FRIENDS
+#ifdef ENABLE_TEST
+#include "gtest/gtest_prod.h"
+class XStationClientStreamTest;
+#define TEST_FRIENDS \
+    friend class XStationClientStreamTest;
+#else
+#define TEST_FRIENDS
+#endif
+
 namespace xapi
 {
 
@@ -100,6 +110,8 @@ class XStationClientStream
     // The stream session ID.
     const boost::url m_streamUrl;
     const std::string m_streamSessionId;
+
+    TEST_FRIENDS
 };
 
 } // namespace xapi
