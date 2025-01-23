@@ -1,5 +1,6 @@
 #include "Connection.hpp"
 #include "Exceptions.hpp"
+#include <iostream>
 
 namespace xapi
 {
@@ -25,7 +26,19 @@ Connection::Connection(Connection &&other) noexcept
 
 Connection::~Connection()
 {
-    cancelAsyncOperations();
+    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
+    if (m_websocket.is_open())
+    {
+        try
+        {
+            // Attempt a graceful WebSocket closure
+            m_websocket.close(boost::beast::websocket::close_code::normal);
+        }
+        catch (const boost::system::system_error &e)
+        {
+            std::cerr << "Fatal error: " << e.what() << std::endl;
+        }
+    }
 }
 
 boost::asio::awaitable<void> Connection::connect(const boost::url &url)
@@ -79,7 +92,7 @@ boost::asio::awaitable<void> Connection::establishSSLConnection(
 
 boost::asio::awaitable<void> Connection::disconnect()
 {
-    cancelAsyncOperations();
+    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
     try
     {
         co_await m_websocket.async_close(boost::beast::websocket::close_code::normal, boost::asio::use_awaitable);
@@ -148,15 +161,17 @@ boost::asio::awaitable<void> Connection::startKeepAlive(boost::asio::cancellatio
     const auto executor = co_await boost::asio::this_coro::executor;
     boost::asio::steady_timer pingTimer(executor);
     const auto pingInterval = std::chrono::seconds(20);
+    bool canceled = true;
 
-    cancellationSlot.assign([&]([[maybe_unused]] boost::asio::cancellation_type type) {
+    cancellationSlot.assign([&](boost::asio::cancellation_type type) {
         if (type == boost::asio::cancellation_type::all)
         {
+            canceled = true;
             pingTimer.cancel();
         }
     });
 
-    while (true)
+    while (!canceled)
     {
         try
         {
@@ -176,15 +191,6 @@ boost::asio::awaitable<void> Connection::startKeepAlive(boost::asio::cancellatio
         {
             throw exception::ConnectionClosed(e.what());
         }
-    }
-}
-
-void Connection::cancelAsyncOperations() noexcept
-{
-    m_cancellationSignal.emit(boost::asio::cancellation_type::all);
-    if (m_websocket.is_open())
-    {
-        m_websocket.next_layer().next_layer().cancel();
     }
 }
 
