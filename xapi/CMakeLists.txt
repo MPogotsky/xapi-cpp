@@ -23,6 +23,7 @@ set(COMMON_FLAGS
     -Werror
     -Wpedantic
     -Wextra
+    -march=native
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

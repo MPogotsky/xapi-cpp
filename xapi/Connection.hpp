@@ -97,12 +97,6 @@ class Connection : public IConnection
      */
     boost::asio::awaitable<void> startKeepAlive(boost::asio::cancellation_slot cancellationSlot);
 
-    /**
-     * @brief Cancels all pending asynchronous operations and stops the keep-alive coroutine.
-     * @return void.
-     */
-    void cancelAsyncOperations() noexcept;
-
     // SSL context, stores certificates.
     boost::asio::ssl::context m_sslContext;
 
