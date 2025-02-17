@@ -1,6 +1,7 @@
-name: New feature
+name: Feature request
 description: Suggest or request a new feature
 labels: ["enhancement"]
+assignees: ["MPogotsky"]
 body:
   - type: markdown
     attributes:
@@ -10,7 +11,7 @@ body:
     id: description
     attributes:
       label: Describe the feature
-      placeholder: A button in the screen X that allows to do Y
+      placeholder: New method in xapi client that allows to do Y
     validations:
       required: true
   - type: textarea
@@ -23,7 +24,7 @@ body:
     attributes:
       label: Additional context
       placeholder: |
-        Add any other context or screenshots about the feature request here.
+        Add any other context about the feature request here
   - type: dropdown
     id: assign
     attributes:
@@ -33,4 +34,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for your suggestion! Let's see together if it can be implemented.
+        Thanks for your suggestion! Let`s discuss how it can be implemented
